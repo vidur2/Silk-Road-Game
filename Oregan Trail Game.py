@@ -83,8 +83,10 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
         dict1['silver'] = dict1['silver'] - (trade[1]/10)
         statPositions.append(counter)
       counter = counter + 1
+    counter = 0
     for position in statPositions:
-      del splitTrade[position]
+      del splitTrade[position-counter]
+      counter = counter + 1
     falliabilityChecker = fullTrade(splitTrade, dict1,valueDict=valueDict)                  # Executes full trade based on user input
 
       # The error catching from earlier is applied here

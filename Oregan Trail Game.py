@@ -24,15 +24,20 @@ def isIntable(number):
         return False
 
 # Basically executes a trade by subtracting values from the users inventory
-def trade(thing, count, dict1):
+def trade(desiredItem, silverAmount, dict1, value):
   # Makes sure that whatever the user is entering is an obtainable item in the game
-  if thing not in list(dict1.keys()):
+  if desiredItem not in list(value.keys()) or desiredItem == 'Silver':
       return False                  # This needs to be done before the first mention of dict1[thing] to make sure there are no errors
   
   # Checks if the user can trade the amount s/he wants to, and then manipulates if so
   # isIntable() is used here to make sure that the user entered a number, if it is not intable, then the program will go into the else catch
-  elif dict1[thing] - count >= 0 and isIntable(count):
-    dict1[thing] = dict1[thing] - count
+  elif dict1['Silver'] - silverAmount >= 0 and isIntable(silverAmount):
+    scalar = randint(0, 10)
+    if scalar > 5:
+        dict1[desiredItem] = dict1[desiredItem] + 2*(silverAmount/value[desiredItem])
+    else:
+        dict1[desiredItem] = dict1[desiredItem] + 0.5*(silverAmount/value[desiredItem])
+    dict1['Silver'] = dict1['Silver'] - silverAmount
     return True
   # In all other cases False is return, indicating bad input(see first if catch)
   else:
@@ -42,15 +47,8 @@ def trade(thing, count, dict1):
 def fullTrade(items, dict2, valueDict):
     # Initializes list which will be returned
     returnValue = []
-    possibleItems = list(valueDict.keys())
-    possibleItems.remove('Silver')
     for item in items:
-        possiblePositions = randint(0, 4)
-        itemName = possibleItems[possiblePositions]
-        value = valueDict[possibleItems[possiblePositions]]
-        isSuccesful = trade(item[0], item[1], dict2)                  # isSuccesful is the True/False value returned by trade
-        itemCount = item[1]/value
-        dict2[itemName] = dict2[itemName] + itemCount
+        isSuccesful = trade(item[0], item[1], dict2, value=valueDict)                  # isSuccesful is the True/False value returned by trade
         returnValue.append(isSuccesful)                  # This value is then appended to a list, the list will be used for error catching later
     print('Your inventory after the trade is ' + str(dict2))
     return returnValue
@@ -58,7 +56,7 @@ def fullTrade(items, dict2, valueDict):
 # Uses the previous methods to execute a trade based on direct user input
 def stringTradeGenerator(dict1, valueDict, statsDict):
     # lines 47-54 are used to get user input and reformat it
-    tradeString = input('Enter your trade in the following format(trade1:count trade2:count)\n If you want to buy food enter the format (food:replenishing amount) ')
+    tradeString = input('Enter your trade in the following format(desiredItem:silverAmount desiredItem2:silverAmount)\n If you want to buy food enter the format (food:replenishing amount) ')
     splitTrade = tradeString.split()
     counter = 1
     statPositions = []
@@ -82,11 +80,8 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
         dict1['Silver'] = dict1['Silver'] - (trade[1]/10)
         statPositions.append(counter)
       counter = counter + 1
-    print(statPositions)
-    print(len(splitTrade))
     for position in statPositions:
-      del splitTrade[position - 1]
-    
+      del splitTrade[position]
     falliabilityChecker = fullTrade(splitTrade, dict1,valueDict=valueDict)                  # Executes full trade based on user input
 
       # The error catching from earlier is applied here
@@ -187,8 +182,9 @@ def postCheck(stage, valueMatrix):
             valueMatrix[key] = valueMatrix[key] * 0.9
         counter = counter + 1
 
-def attack(inventory):
-    attackSuccess = 0.25 * (100 - randint(0, 100))
+def attack(inventory, statsDict):
+    fendOffAbility = (statsDict['morale'] + statsDict['durability'])/800
+    attackSuccess = (0.25-fendOffAbility) * (100 - randint(0, 100))
     inventory['Silver'] = attackSuccess * inventory['Silver']
 
 def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chineseMarkets):
@@ -208,6 +204,22 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         stringTradeGenerator(inventory, value, statsDictionary)
         newDay(statsDictionary=statsDictionary, difficulty = difficulty)
     elif action == 'proceed':
+        probabilityOfAttack = randint(0, 10)
+        print(probabilityOfAttack)
+        if probabilityOfAttack > 5:
+            possibleAttackText = [
+                'Enter Attack Texts', 
+                'Formatted Like so', 
+                'You can have different', 
+                'one for each stage', 
+                'placeholder text attack', 
+                'placeholder text attack', 
+                'placeholder text attack'
+                ]
+            attack(inventory=inventory, statsDict=statsDictionary)
+            print(possibleAttackText[stage])
+            currency = inventory['Silver']
+            print(f'You now have {str(currency)} silver left')
         if hasHit == False:
             stage = stage + 1
         elif hasHit == True:

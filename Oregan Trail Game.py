@@ -6,10 +6,10 @@ Oregano Trail
 from random import randint
 
 def newDay(statsDictionary, difficulty):
-    debuff1 = difficulty * randint(0, 10)
-    debuff2 = difficulty * randint(0, 10)
-    debuff3 = difficulty * randint(0, 10)
-    debuff4 = difficulty * randint(0, 10)
+    debuff1 = difficulty * randint(10, 20)
+    debuff2 = difficulty * randint(10, 20)
+    debuff3 = difficulty * randint(10, 20)
+    debuff4 = difficulty * randint(10, 20)
     statsDictionary['food'] = statsDictionary['food'] - debuff1
     statsDictionary['water'] = statsDictionary['water'] - debuff2
     statsDictionary['durability'] = statsDictionary['durability'] - debuff3
@@ -24,20 +24,15 @@ def isIntable(number):
         return False
 
 # Basically executes a trade by subtracting values from the users inventory
-def trade(desiredItem, silverAmount, dict1, value):
+def trade(thing, count, dict1):
   # Makes sure that whatever the user is entering is an obtainable item in the game
-  if desiredItem not in list(value.keys()) or desiredItem == 'Silver':
+  if thing not in list(dict1.keys()):
       return False                  # This needs to be done before the first mention of dict1[thing] to make sure there are no errors
   
   # Checks if the user can trade the amount s/he wants to, and then manipulates if so
   # isIntable() is used here to make sure that the user entered a number, if it is not intable, then the program will go into the else catch
-  elif dict1['Silver'] - silverAmount >= 0 and isIntable(silverAmount):
-    scalar = randint(0, 10)
-    if scalar > 5:
-        dict1[desiredItem] = dict1[desiredItem] + 2*(silverAmount/value[desiredItem])
-    else:
-        dict1[desiredItem] = dict1[desiredItem] + 0.5*(silverAmount/value[desiredItem])
-    dict1['Silver'] = dict1['Silver'] - silverAmount
+  elif dict1[thing] - count >= 0 and isIntable(count):
+    dict1[thing] = dict1[thing] - count
     return True
   # In all other cases False is return, indicating bad input(see first if catch)
   else:
@@ -47,8 +42,15 @@ def trade(desiredItem, silverAmount, dict1, value):
 def fullTrade(items, dict2, valueDict):
     # Initializes list which will be returned
     returnValue = []
+    possibleItems = list(valueDict.keys())
+    possibleItems.remove('Silver')
     for item in items:
-        isSuccesful = trade(item[0], item[1], dict2, value=valueDict)                  # isSuccesful is the True/False value returned by trade
+        possiblePositions = randint(0, 4)
+        itemName = possibleItems[possiblePositions]
+        value = valueDict[possibleItems[possiblePositions]]
+        isSuccesful = trade(item[0], item[1], dict2)                  # isSuccesful is the True/False value returned by trade
+        itemCount = item[1]/value
+        dict2[itemName] = dict2[itemName] + itemCount
         returnValue.append(isSuccesful)                  # This value is then appended to a list, the list will be used for error catching later
     print('Your inventory after the trade is ' + str(dict2))
     return returnValue
@@ -56,7 +58,7 @@ def fullTrade(items, dict2, valueDict):
 # Uses the previous methods to execute a trade based on direct user input
 def stringTradeGenerator(dict1, valueDict, statsDict):
     # lines 47-54 are used to get user input and reformat it
-    tradeString = input('Enter your trade in the following format(desiredItem:silverAmount desiredItem2:silverAmount)\n If you want to buy food enter the format (food:replenishing amount) ')
+    tradeString = input('Enter your trade in the following format(trade1:count trade2:count)\n If you want to buy food enter the format (food:replenishing amount) ')
     splitTrade = tradeString.split()
     counter = 1
     statPositions = []
@@ -80,8 +82,11 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
         dict1['Silver'] = dict1['Silver'] - (trade[1]/10)
         statPositions.append(counter)
       counter = counter + 1
+    print(statPositions)
+    print(len(splitTrade))
     for position in statPositions:
-      del splitTrade[position]
+      del splitTrade[position - 1]
+    
     falliabilityChecker = fullTrade(splitTrade, dict1,valueDict=valueDict)                  # Executes full trade based on user input
 
       # The error catching from earlier is applied here
@@ -136,13 +141,11 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
         falliabilityChecker = fullTrade(splitTrade, dict1, valueDict=valueDict)
         
 
-def weightOfThings(inventory, weightDict):
-    finalWeight = 0
-    counter = 0
-    for i in list(inventory.keys()):
-        finalWeight = (inventory[i]*weightDict[i] + finalWeight)
-        counter = counter + 1
-    return finalWeight
+def weightOfThings(dict1):
+    n = 0
+    for i in list(dict1.keys()):
+        n = dict1[i] + n
+    return n
 
 
 def totalValue(dict1, dict2):
@@ -154,25 +157,25 @@ def totalValue(dict1, dict2):
 
 def stagePrinter(stage):
     if stage == 0:
-        print('constantinople')
+        print('\nYou are in Constantinople')
         print('{O|-|-|-|-|-|-}')
     elif stage == 1:
-        print('baghdad')
+        print('\nYou are in Baghdad')
         print('{-|O|-|-|-|-|-}')
     elif stage == 2:
-        print('rey')
+        print('\nYou are in Rey')
         print('{-|-|O|-|-|-|-}')
     elif stage == 3:
-        print('merv')
+        print('\nYou are in Merv')
         print('{-|-|-|O|-|-|-}')
     elif stage == 4:
-        print('samarkand')
+        print('\nYou are in Samarkand')
         print('{-|-|-|-|O|-|-}')
     elif stage == 5:
-        print('dunhuang')
+        print('\nYou are in Dunhuang')
         print('{-|-|-|-|-|O|-}')
     elif stage == 6:
-        print("xi'an")
+        print("\nYou are in Xi'an")
         print('{-|-|-|-|-|-|O}')
 
 def postCheck(stage, valueMatrix):
@@ -184,14 +187,11 @@ def postCheck(stage, valueMatrix):
             valueMatrix[key] = valueMatrix[key] * 0.9
         counter = counter + 1
 
-def attack(inventory, statsDict):
-    fendOffAbility = (statsDict['morale'] + statsDict['durability'])/800
-    attackSuccess = (0.25-fendOffAbility) * (100 - randint(0, 100))
+def attack(inventory):
+    attackSuccess = 0.25 * (100 - randint(0, 100))
     inventory['Silver'] = attackSuccess * inventory['Silver']
 
-def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chineseMarkets, weekCounter, weight):
-    speed = (20/3)*(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])/weightOfThings(inventory, weight)
-    print('Your Current Speed is ' + str(speed))
+def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chineseMarkets):
     if stage == 6:
       value.update(chineseMarkets)
     elif hasHit == True:
@@ -207,58 +207,41 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
     elif action == 'trade':
         stringTradeGenerator(inventory, value, statsDictionary)
         newDay(statsDictionary=statsDictionary, difficulty = difficulty)
-        weekCounter = weekCounter + 1
     elif action == 'proceed':
-        negativeEvent = randint(0, 10)
-        if negativeEvent >= 8:
-            possibleAttackText = [
-                'Enter Attack Texts', 
-                'Formatted Like so', 
-                'You can have different', 
-                'one for each stage', 
-                'placeholder text attack', 
-                'placeholder text attack', 
-                'placeholder text attack'
-                ]
-            attack(inventory=inventory, statsDict=statsDictionary)
-            print(possibleAttackText[stage])
-            currency = inventory['Silver']
-            print(f'You now have {str(currency)} silver left')
-        
-        if hasHit == False and negativeEvent < 5 and negativeEvent > 8 and weekCounter == 6*speed:
+        if hasHit == False:
             stage = stage + 1
-            weekCounter = 0
-        elif hasHit == True and negativeEvent < 5 and negativeEvent > 8 and weekCounter == 6*speed:
+        elif hasHit == True:
             stage = stage - 1
-            weekCounter = 0
-        elif weekCounter < 3:
-            print(f'You must stay at least {str(6*speed)} weeks at a city before traveling with your current speed')
-        else:
-            print('An extreme weather even has occoured, you must wait an extra week before traveling.')
-            weekCounter = weekCounter + 1
-
+        print("\nStats:")
         newDay(statsDictionary=statsDictionary, difficulty=difficulty)
-        print('Your Current Speed is ' + str(speed))
-        stagePrinter(stage)
+        print("\nInventory:")
         postCheck(stage, value)
         print(value)
+        
         if stage == 1:
-          print("Welcome to Baghdad. ETC ETC")
+          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad. ETC ETC")
         if stage == 2:
-          print("Welcome to Rey. ETC ETC")
-    
+          print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. ETC ETC")
+        if stage == 3:
+          print("\n{-|-|-|O|-|-|-}\nYou are now entering Merv. ETC ETC")
+        if stage == 4:
+          print("\n{-|-|-|-|O|-|-}\nYou are now entering Samarkand. ETC ETC")
+        if stage == 5:
+          print("\n{-|-|-|-|-|O|-}\nYou are now entering Dunhuang. ETC ETC")
+        if stage == 6:
+          print("\n{-|-|-|-|-|-|O}\nYou are now entering Xi'an. ETC ETC")
     elif action == 'price check':
         print(value)
     elif action == 'inventory':
       print(inventory)
     if stage == 6:
         return stage, True
-    return stage, False, weekCounter
+    return stage, False
 
 def main():
   stage = 0
   hasHappened = False
-  weekCounter = 0
+
   print("The Oregano Trail: a Silk Road Simulator \nby Vidur Modgil and Daniel Chen \n")
   print("Info: The Silk Road was a trading network that connected the West with China. \nGoods such as textiles, porcelain, and silk traveled along the overland route. You are a trader about to attempt a journey to China. You have 200 silver to spend. You may purchase supplies for your upcoming journey in your starting city, in any of the numerous cities along the route, or in China. Keep in mind that location and luck affects prices and goods available. Be wary of your food, water, caravan morale, weight of goods, and equipment durability.\n")
   input('Press enter when you are ready to play: ')
@@ -267,64 +250,53 @@ def main():
       print("\nYou are in Constantinople, a Western city at the start of the Silk Road. Here you should purchase items for your upcoming journey. Remember to acquire goods for trading, food, water, spare equipment, entertainment, and defensive items. You can do the following actions: map, price check, trade, inventory, and proceed. Map checks your location. Price check displays prices in the following format: 'Good': Cost in silver. Trade allows you to buy and sell; trades should be input in format [TBD]. Inventory displays what goods you own, and proceed lets you leave the city and proceed to the next one.")
   
   yourInventory = {
-      'Silver': 200, 
-      'Silk': 0, 
-      'Honey': 0,
-      'Ivory': 0,
-      'Textiles': 0,
-      'Gold': 0,
-      'Paper': 0,
-      'Tea': 0,
-      'Gunpowder': 0,
-      'Porcelain': 0
+      'silver': 200, 
+      'silk': 0, 
+      'honey': 0,
+      'ivory': 0,
+      'textiles': 0,
+      'gold': 0,
+      'paper': 0,
+      'tea': 0,
+      'gunpowder': 0,
+      'porcelain': 0
       }
 
   valueMatrix = {
-      'Silver': 1,
-      'Silk': 20,
-      'Honey': 10,
-      'Ivory': 20,
-      'Textiles': 10,
-      'Gold': 30,
+      'silver': 1,
+      'silk': 20,
+      'honey': 10,
+      'ivory': 20,
+      'textiles': 10,
+      'gold': 30,
   }
   valueChecker = {
-    'Silver': 1,
-    'Silk': 20,
-    'Honey': 10,
-    'Ivory': 20,
-    'Textiles': 10,
-    'Gold': 30,
-    'Tea': 10,
-    'Gunpowder': 20,
-    'Porcelain': 20,
+    'silver': 1,
+    'silk': 20,
+    'honey': 10,
+    'ivory': 20,
+    'textiles': 10,
+    'gold': 30,
+    'tea': 10,
+    'gunpowder': 20,
+    'porcelain': 20,
   }
   chineseMarket = {
-    'Tea': 5,
-    'Gunpowder': 5,
-    'Porcelain': 10,
+    'tea': 5,
+    'gunpowder': 5,
+    'porcelain': 10,
   }
   stats = {
       'food': 100,
       'water': 100,
       'morale': 100,
-      'durability': 100,
+      'durability': 100
   }
-  weights = {
-      'Silver': 10, 
-      'Silk': 1, 
-      'Honey': 0.5,
-      'Ivory': 5,
-      'Textiles': 0.5,
-      'Gold': 8,
-      'Paper': 1,
-      'Tea': 3,
-      'Gunpowder': 4,
-      'Porcelain': 4
-      }
+
   while (stage <= 6):
-      stage, hasHappened, weekCounter = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty, chineseMarket, weekCounter, weight=weights)
+      stage, hasHappened = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty, chineseMarket)
   while (stage >= 0):
-      stage, hasHappened, weekCounter = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket, weekCounter=weekCounter, weight=weights)
+      stage, hasHappened = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket)
 
 if( __name__ == '__main__'):
   main()

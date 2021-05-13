@@ -136,11 +136,13 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
         falliabilityChecker = fullTrade(splitTrade, dict1, valueDict=valueDict)
         
 
-def weightOfThings(dict1):
-    n = 0
-    for i in list(dict1.keys()):
-        n = dict1[i] + n
-    return n
+def weightOfThings(inventory, weightDict):
+    finalWeight = 0
+    counter = 0
+    for i in list(inventory.keys()):
+        finalWeight = (inventory[i]*weightDict[i] + finalWeight)
+        counter = counter + 1
+    return finalWeight
 
 
 def totalValue(dict1, dict2):
@@ -187,7 +189,9 @@ def attack(inventory, statsDict):
     attackSuccess = (0.25-fendOffAbility) * (100 - randint(0, 100))
     inventory['Silver'] = attackSuccess * inventory['Silver']
 
-def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chineseMarkets):
+def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chineseMarkets, weekCounter, weight):
+    speed = (20/3)*(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])/weightOfThings(inventory, weight)
+    print('Your Current Speed is ' + str(speed))
     if stage == 6:
       value.update(chineseMarkets)
     elif hasHit == True:
@@ -203,10 +207,10 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
     elif action == 'trade':
         stringTradeGenerator(inventory, value, statsDictionary)
         newDay(statsDictionary=statsDictionary, difficulty = difficulty)
+        weekCounter = weekCounter + 1
     elif action == 'proceed':
-        probabilityOfAttack = randint(0, 10)
-        print(probabilityOfAttack)
-        if probabilityOfAttack > 5:
+        negativeEvent = randint(0, 10)
+        if negativeEvent >= 8:
             possibleAttackText = [
                 'Enter Attack Texts', 
                 'Formatted Like so', 
@@ -220,11 +224,21 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
             print(possibleAttackText[stage])
             currency = inventory['Silver']
             print(f'You now have {str(currency)} silver left')
-        if hasHit == False:
+        
+        if hasHit == False and negativeEvent < 5 and negativeEvent > 8 and weekCounter == 6*speed:
             stage = stage + 1
-        elif hasHit == True:
+            weekCounter = 0
+        elif hasHit == True and negativeEvent < 5 and negativeEvent > 8 and weekCounter == 6*speed:
             stage = stage - 1
+            weekCounter = 0
+        elif weekCounter < 3:
+            print(f'You must stay at least {str(6*speed)} weeks at a city before traveling with your current speed')
+        else:
+            print('An extreme weather even has occoured, you must wait an extra week before traveling.')
+            weekCounter = weekCounter + 1
+
         newDay(statsDictionary=statsDictionary, difficulty=difficulty)
+        print('Your Current Speed is ' + str(speed))
         stagePrinter(stage)
         postCheck(stage, value)
         print(value)
@@ -232,18 +246,19 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
           print("Welcome to Baghdad. ETC ETC")
         if stage == 2:
           print("Welcome to Rey. ETC ETC")
+    
     elif action == 'price check':
         print(value)
     elif action == 'inventory':
       print(inventory)
     if stage == 6:
         return stage, True
-    return stage, False
+    return stage, False, weekCounter
 
 def main():
   stage = 0
   hasHappened = False
-
+  weekCounter = 0
   print("The Oregano Trail: a Silk Road Simulator \nby Vidur Modgil and Daniel Chen \n")
   print("Info: The Silk Road was a trading network that connected the West with China. \nGoods such as textiles, porcelain, and silk traveled along the overland route. You are a trader about to attempt a journey to China. You have 200 silver to spend. You may purchase supplies for your upcoming journey in your starting city, in any of the numerous cities along the route, or in China. Keep in mind that location and luck affects prices and goods available. Be wary of your food, water, caravan morale, weight of goods, and equipment durability.\n")
   input('Press enter when you are ready to play: ')
@@ -292,13 +307,24 @@ def main():
       'food': 100,
       'water': 100,
       'morale': 100,
-      'durability': 100
+      'durability': 100,
   }
-
+  weights = {
+      'Silver': 10, 
+      'Silk': 1, 
+      'Honey': 0.5,
+      'Ivory': 5,
+      'Textiles': 0.5,
+      'Gold': 8,
+      'Paper': 1,
+      'Tea': 3,
+      'Gunpowder': 4,
+      'Porcelain': 4
+      }
   while (stage <= 6):
-      stage, hasHappened = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty, chineseMarket)
+      stage, hasHappened, weekCounter = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty, chineseMarket, weekCounter, weight=weights)
   while (stage >= 0):
-      stage, hasHappened = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket)
+      stage, hasHappened, weekCounter = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket, weekCounter=weekCounter, weight=weights)
 
 if( __name__ == '__main__'):
   main()

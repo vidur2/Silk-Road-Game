@@ -6,10 +6,10 @@ Oregano Trail
 from random import randint
 
 def newDay(statsDictionary, difficulty):
-    debuff1 = difficulty * randint(0, 10)
-    debuff2 = difficulty * randint(0, 10)
-    debuff3 = difficulty * randint(0, 10)
-    debuff4 = difficulty * randint(0, 10)
+    debuff1 = difficulty * randint(10, 20)
+    debuff2 = difficulty * randint(10, 20)
+    debuff3 = difficulty * randint(10, 20)
+    debuff4 = difficulty * randint(10, 20)
     statsDictionary['food'] = statsDictionary['food'] - debuff1
     statsDictionary['water'] = statsDictionary['water'] - debuff2
     statsDictionary['durability'] = statsDictionary['durability'] - debuff3
@@ -154,25 +154,25 @@ def totalValue(dict1, dict2):
 
 def stagePrinter(stage):
     if stage == 0:
-        print('constantinople')
+        print('\nYou are in Constantinople')
         print('{O|-|-|-|-|-|-}')
     elif stage == 1:
-        print('baghdad')
+        print('\nYou are in Baghdad')
         print('{-|O|-|-|-|-|-}')
     elif stage == 2:
-        print('rey')
+        print('\nYou are in Rey')
         print('{-|-|O|-|-|-|-}')
     elif stage == 3:
-        print('merv')
+        print('\nYou are in Merv')
         print('{-|-|-|O|-|-|-}')
     elif stage == 4:
-        print('samarkand')
+        print('\nYou are in Samarkand')
         print('{-|-|-|-|O|-|-}')
     elif stage == 5:
-        print('dunhuang')
+        print('\nYou are in Dunhuang')
         print('{-|-|-|-|-|O|-}')
     elif stage == 6:
-        print("xi'an")
+        print("\nYou are in Xi'an")
         print('{-|-|-|-|-|-|O}')
 
 def postCheck(stage, valueMatrix):
@@ -203,6 +203,7 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
     while action not in possibleActions:
         action = input('\nInvalid input \nReenter your next action: ')
     if action == 'map':
+        print('\nMap:')
         stagePrinter(stage)
     elif action == 'trade':
         stringTradeGenerator(inventory, value, statsDictionary)
@@ -225,10 +226,10 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
             currency = inventory['Silver']
             print(f'You now have {str(currency)} silver left')
         
-        if hasHit == False and negativeEvent < 5 and negativeEvent > 8 and weekCounter == 6*speed:
+        if hasHit == False and weekCounter == 6*speed and negativeEvent < 5 or negativeEvent > 8:
             stage = stage + 1
             weekCounter = 0
-        elif hasHit == True and negativeEvent < 5 and negativeEvent > 8 and weekCounter == 6*speed:
+        elif hasHit == True and weekCounter == 6*speed and negativeEvent < 5 or negativeEvent > 8:
             stage = stage - 1
             weekCounter = 0
         elif weekCounter < 3:
@@ -243,13 +244,23 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         postCheck(stage, value)
         print(value)
         if stage == 1:
-          print("Welcome to Baghdad. ETC ETC")
-        if stage == 2:
-          print("Welcome to Rey. ETC ETC")
+          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad. ETC ETC")
+        elif stage == 2:
+          print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. ETC ETC")
+        elif stage == 3:
+          print("\n{-|-|-|O|-|-|-}\nYou are now entering Merv. ETC ETC")
+        elif stage == 4:
+          print("\n{-|-|-|-|O|-|-}\nYou are now entering Samarkand. ETC ETC")
+        elif stage == 5:
+          print("\n{-|-|-|-|-|O|-}\nYou are now entering Dunhuang. ETC ETC")
+        elif stage == 6:
+          print("\n{-|-|-|-|-|-|O}\nYou are now entering Xi'an. ETC ETC")
     
     elif action == 'price check':
+        print('\nPrices:')
         print(value)
     elif action == 'inventory':
+      print('\nInventory:')
       print(inventory)
     if stage == 6:
         return stage, True
@@ -267,41 +278,41 @@ def main():
       print("\nYou are in Constantinople, a Western city at the start of the Silk Road. Here you should purchase items for your upcoming journey. Remember to acquire goods for trading, food, water, spare equipment, entertainment, and defensive items. You can do the following actions: map, price check, trade, inventory, and proceed. Map checks your location. Price check displays prices in the following format: 'Good': Cost in silver. Trade allows you to buy and sell; trades should be input in format [TBD]. Inventory displays what goods you own, and proceed lets you leave the city and proceed to the next one.")
   
   yourInventory = {
-      'Silver': 200, 
-      'Silk': 0, 
-      'Honey': 0,
-      'Ivory': 0,
-      'Textiles': 0,
-      'Gold': 0,
-      'Paper': 0,
-      'Tea': 0,
-      'Gunpowder': 0,
-      'Porcelain': 0
+      'silver': 200, 
+      'silk': 0, 
+      'honey': 0,
+      'ivory': 0,
+      'textiles': 0,
+      'gold': 0,
+      'paper': 0,
+      'tea': 0,
+      'gunpowder': 0,
+      'porcelain': 0
       }
 
   valueMatrix = {
-      'Silver': 1,
-      'Silk': 20,
-      'Honey': 10,
-      'Ivory': 20,
-      'Textiles': 10,
-      'Gold': 30,
+      'silver': 1,
+      'silk': 20,
+      'honey': 10,
+      'ivory': 20,
+      'textiles': 10,
+      'gold': 30,
   }
   valueChecker = {
-    'Silver': 1,
-    'Silk': 20,
-    'Honey': 10,
-    'Ivory': 20,
-    'Textiles': 10,
-    'Gold': 30,
-    'Tea': 10,
-    'Gunpowder': 20,
-    'Porcelain': 20,
+    'silver': 1,
+    'silk': 20,
+    'honey': 10,
+    'ivory': 20,
+    'textiles': 10,
+    'gold': 30,
+    'tea': 10,
+    'gunpowder': 20,
+    'porcelain': 20,
   }
   chineseMarket = {
-    'Tea': 5,
-    'Gunpowder': 5,
-    'Porcelain': 10,
+    'tea': 5,
+    'gunpowder': 5,
+    'porcelain': 10,
   }
   stats = {
       'food': 100,
@@ -310,16 +321,16 @@ def main():
       'durability': 100,
   }
   weights = {
-      'Silver': 10, 
-      'Silk': 1, 
-      'Honey': 0.5,
-      'Ivory': 5,
-      'Textiles': 0.5,
-      'Gold': 8,
-      'Paper': 1,
-      'Tea': 3,
-      'Gunpowder': 4,
-      'Porcelain': 4
+      'silver': 10, 
+      'silk': 1, 
+      'honey': 0.5,
+      'ivory': 5,
+      'textiles': 0.5,
+      'gold': 8,
+      'paper': 1,
+      'tea': 3,
+      'gunpowder': 4,
+      'porcelain': 4
       }
   while (stage <= 6):
       stage, hasHappened, weekCounter = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty, chineseMarket, weekCounter, weight=weights)

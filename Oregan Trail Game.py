@@ -8,10 +8,10 @@ from random import randint
 # Function that is used to apply debuffs to each stat each time 'trade' or 'proceed' action is taken
 def newDay(statsDictionary, difficulty, weight, inventory):
     # Debuffs are randomly generated and multiplied by user-set difficulty
-    debuff1 = difficulty * randint(10, 20)
-    debuff2 = difficulty * randint(10, 20)
-    debuff3 = difficulty * randint(10, 20)
-    debuff4 = difficulty * randint(10, 20)
+    debuff1 = difficulty/5 * randint(10, 20)
+    debuff2 = difficulty/5 * randint(10, 20)
+    debuff3 = difficulty/5 * randint(10, 20)
+    debuff4 = difficulty/5 * randint(10, 20)
     # Debuffs are applied here
     statsDictionary['food'] = statsDictionary['food'] - debuff1
     statsDictionary['water'] = statsDictionary['water'] - debuff2

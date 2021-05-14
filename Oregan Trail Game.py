@@ -5,16 +5,20 @@ Oregano Trail
 # Preprocessor Directives
 from random import randint
 
+# Function that is used to apply debuffs to each stat each time 'trade' or 'proceed' action is taken
 def newDay(statsDictionary, difficulty, weight, inventory):
+    # Debuffs are randomly generated and multiplied by user-set difficulty
     debuff1 = difficulty * randint(10, 20)
     debuff2 = difficulty * randint(10, 20)
     debuff3 = difficulty * randint(10, 20)
     debuff4 = difficulty * randint(10, 20)
+    # Debuffs are applied here
     statsDictionary['food'] = statsDictionary['food'] - debuff1
     statsDictionary['water'] = statsDictionary['water'] - debuff2
     statsDictionary['durability'] = statsDictionary['durability'] - debuff3
     statsDictionary['morale'] = statsDictionary['morale'] - debuff4
     statsDictionary['speed'] = (20/3)*(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])/weightOfThings(inventory, weight)
+    # Each day the stats are printed back to the user
     print(statsDictionary)
 
 # Uses try-except catch to determine whether a value can be casted into an integer
@@ -202,7 +206,7 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
       chineseItems = list(chineseMarkets.keys())
       for item in chineseItems:
         value.pop(item)
-    possibleActions = ('map', 'trade', 'proceed', 'price check', 'inventory')
+    possibleActions = ('map', 'trade', 'proceed', 'price check', 'inventory', 'help commands', 'help info')
     action = input('\nEnter your next action: ')
     while action not in possibleActions:
         action = input('\nInvalid input \nReenter your next action: ')
@@ -230,16 +234,16 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
             currency = inventory['silver']
             print(f'You now have {str(currency)} silver left')
         
-        if hasHit == False and weekCounter == 6*speed and negativeEvent < 5 or negativeEvent > 8:
+        if hasHit == False and weekCounter == 6/speed and negativeEvent < 5 or negativeEvent > 8:
             stage = stage + 1
             weekCounter = 0
-        elif hasHit == True and weekCounter == 6*speed and negativeEvent < 5 or negativeEvent > 8:
+        elif hasHit == True and weekCounter == 6/speed and negativeEvent < 5 or negativeEvent > 8:
             stage = stage - 1
             weekCounter = 0
         elif weekCounter < 3:
             print(f'You must stay at least {str(6*speed)} weeks at a city before traveling with your current speed')
         else:
-            print('An extreme weather even has occoured, you must wait an extra week before traveling.')
+            print('An extreme weather event has occoured, you must wait an extra week before traveling.')
             weekCounter = weekCounter + 1
 
         newDay(statsDictionary=statsDictionary, difficulty=difficulty, weight=weight, inventory=inventory)
@@ -249,7 +253,7 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         print(value)
 
         if stage == 1:
-          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad. ETC ETC")
+          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad, the first major centre of trade of 6 you will encounter on your journey to Xi'an, China. With the large distance to China, Eastern goods are ratger expensive here, while Western goods and local specialties such as textiles are cheap here.")
         elif stage == 2:
           print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. ETC ETC")
         elif stage == 3:
@@ -267,6 +271,10 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
     elif action == 'inventory':
       print('\nInventory:')
       print(inventory)
+    elif action == 'help commands':
+      print("Map checks your location. \nPrice check displays prices in the following format: 'Good': Cost in silver. \nTrade allows you to buy and sell; trades should be input in format [TBD]. \nInventory displays what goods you own. \nProceed lets you leave the city and proceed to the next one.")
+    elif action == 'help info':
+      print("Supplies may be purchased at any of the 7 major cities (including Constantinople and Xi'an) along the route. \nLocation affects prices and goods available. \nBe wary of your food, water, caravan morale, weight of goods, and equipment durability, and your caravan speed. Speed is calculated off of factors like chance events, health of your caravan, good weight, and your caravan equipment condition. \nThe longer you spend between cities, the higher chance you have of being raided or encountering malignant conditions. \nDue to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than liquid assets, which can be lost easier in raids. \nTime is divided into units of half a month per turn, and the journey for an average trader should take around 2 years round trip. \nCities are spaced around a month and a half of travel apart from each other.")
     if stage == 6:
         return stage, True
     return stage, False, weekCounter
@@ -276,11 +284,12 @@ def main():
   hasHappened = False
   weekCounter = 0
   print("The Oregano Trail: a Silk Road Simulator \nby Vidur Modgil and Daniel Chen \n")
-  print("Info: The Silk Road was a trading network that connected the West with China. \nGoods such as textiles, porcelain, and silk traveled along the overland route. You are a trader about to attempt a journey to China. You have 200 silver to spend. You may purchase supplies for your upcoming journey in your starting city, in any of the numerous cities along the route, or in China. Keep in mind that location and luck affects prices and goods available. Be wary of your food, water, caravan morale, weight of goods, and equipment durability.\n")
+  print('The Silk Road was a trading network that connected the West with China. \nGoods such as textiles, porcelain, and silk traveled along the overland route. You are a trader about to attempt a journey to China. You have 200 silver to spend. You may purchase supplies for your upcoming journey in your starting city, in any of the numerous cities along the route, or in China. Keep in mind that location affects prices and goods available. Be wary of your food, water, caravan morale, weight of goods, and equipment durability, and your caravan speed, which is based off of factors like chance events, health of your caravan, good weight, and your caravan equipment condition. The longer you spend between cities, the higher chance you have of being raided or encountering malignant conditions. Due to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than liquid assets, which can be lost easier in raids. Time is divided into units of half a month per "turn", and the journey for an average trader should take around 2 years round trip. Cities are spaced around a month and a half of travel apart from each other. \n')
   input('Press enter when you are ready to play: ')
-  difficulty = float(input('\nEnter any difficulty (can be decimal), where 1 = Pax Mongolica, 100 = Sudden Death Syndrome: '))
+  difficulty = float(input('\nEnter any difficulty (can be decimal), where <1 = "Dying is illegal", 5 = "Pax Mongolica", 10 = "Recommended", >100 = "Sudden Death Syndrome": '))
   if stage == 0:
       print("\nYou are in Constantinople, a Western city at the start of the Silk Road. Here you should purchase items for your upcoming journey. Remember to acquire goods for trading, food, water, spare equipment, entertainment, and defensive items. You can do the following actions: map, price check, trade, inventory, and proceed. Map checks your location. Price check displays prices in the following format: 'Good': Cost in silver. Trade allows you to buy and sell; trades should be input in format [TBD]. Inventory displays what goods you own, and proceed lets you leave the city and proceed to the next one.")
+      print('You can access the list of commands and their explanations and a brief explanation of game principles by inputting "help commands" and "help info", respectively")')
   
   yourInventory = {
       'silver': 200, 

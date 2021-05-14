@@ -17,9 +17,20 @@ def newDay(statsDictionary, difficulty, weight, inventory):
     statsDictionary['water'] = statsDictionary['water'] - debuff2
     statsDictionary['durability'] = statsDictionary['durability'] - debuff3
     statsDictionary['morale'] = statsDictionary['morale'] - debuff4
+    print('Your current weight is ' + str(weightOfThings(inventory, weight)))
+    # print(inventory)
+    # print(weight)
     statsDictionary['speed'] = (20/3)*(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])/weightOfThings(inventory, weight)
     # Each day the stats are printed back to the user
     print(statsDictionary)
+    allStats = list(statsDictionary.keys())
+    # Checks if any variable is less than or equal to 0
+    for stat in allStats:
+        if statsDictionary[stat] <= 0:
+            return False
+            print(False)
+            break
+    return True
 
 # Uses try-except catch to determine whether a value can be casted into an integer
 def isIntable(number):
@@ -195,10 +206,11 @@ def postCheck(stage, valueMatrix):
 
 def attack(inventory, statsDict):
     fendOffAbility = (statsDict['morale'] + statsDict['durability'])/800
-    attackSuccess = (0.25-fendOffAbility) * (100 - randint(0, 100))
-    inventory['silver'] = attackSuccess * inventory['silver']
+    attackSuccess = 0.25-fendOffAbility
+    inventory['silver'] = inventory['silver'] - (attackSuccess * inventory['silver'])
 
 def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chineseMarkets, weekCounter, weight):
+    isAlive = True
     speed = statsDictionary['speed']
     if stage == 6:
       value.update(chineseMarkets)
@@ -215,7 +227,7 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         stagePrinter(stage)
     elif action == 'trade':
         stringTradeGenerator(inventory, value, statsDictionary)
-        newDay(statsDictionary=statsDictionary, difficulty = difficulty, weight=weight, inventory=inventory)
+        isAlive = newDay(statsDictionary=statsDictionary, difficulty = difficulty, weight=weight, inventory=inventory)
         weekCounter = weekCounter + 1
     elif action == 'proceed':
         negativeEvent = randint(0, 10)
@@ -246,7 +258,7 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
             print('An extreme weather event has occoured, you must wait an extra week before traveling.')
             weekCounter = weekCounter + 1
 
-        newDay(statsDictionary=statsDictionary, difficulty=difficulty, weight=weight, inventory=inventory)
+        isAlive = newDay(statsDictionary=statsDictionary, difficulty=difficulty, weight=weight, inventory=inventory)
         print('Your Current Speed is ' + str(speed))
         stagePrinter(stage)
         postCheck(stage, value)
@@ -276,13 +288,15 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
     elif action == 'help info':
         print("Supplies may be purchased at any of the 7 major cities (including Constantinople and Xi'an) along the route. \nLocation affects prices and goods available. \nBe wary of your food, water, caravan morale, weight of goods, and equipment durability, and your caravan speed. Speed is calculated off of factors like chance events, health of your caravan, good weight, and your caravan equipment condition. \nThe longer you spend between cities, the higher chance you have of being raided or encountering malignant conditions. \nDue to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than liquid assets, which can be lost easier in raids. \nTime is divided into units of half a month per turn, and the journey for an average trader should take around 2 years round trip. \nCities are spaced around a month and a half of travel apart from each other.")
     if stage == 6:
-        return stage, True
-    return stage, False, weekCounter
+        return stage, True, isAlive
+    return stage, False, isAlive
 
 def main():
   stage = 0
   hasHappened = False
   weekCounter = 0
+  isAlive = True
+  replay = True
   print("The Oregano Trail: a Silk Road Simulator \nby Vidur Modgil and Daniel Chen \n")
   print('The Silk Road was a trading network that connected the West with China. \nGoods such as textiles, porcelain, and silk traveled along the overland route. You are a trader about to attempt a journey to China. You have 200 silver to spend. You may purchase supplies for your upcoming journey in your starting city, in any of the numerous cities along the route, or in China. Keep in mind that location affects prices and goods available. Be wary of your food, water, caravan morale, weight of goods, and equipment durability, and your caravan speed, which is based off of factors like chance events, health of your caravan, good weight, and your caravan equipment condition. The longer you spend between cities, the higher chance you have of being raided or encountering malignant conditions. Due to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than liquid assets, which can be lost easier in raids. Time is divided into units of half a month per "turn", and the journey for an average trader should take around 2 years round trip. Cities are spaced around a month and a half of travel apart from each other. \n')
   input('Press enter when you are ready to play: ')
@@ -347,10 +361,83 @@ def main():
       'gunpowder': 4,
       'porcelain': 4
       }
-  while (stage <= 6):
-      stage, hasHappened, weekCounter = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty, chineseMarket, weekCounter, weight=weights)
-  while (stage >= 0):
-      stage, hasHappened, weekCounter = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket, weekCounter=weekCounter, weight=weights)
+  while(replay == True):
+    stage = 0
+    hasHappened = False
+    weekCounter = 0
+    isAlive = True
+    yourInventory = {
+      'silver': 200, 
+      'silk': 0, 
+      'honey': 0,
+      'ivory': 0,
+      'textiles': 0,
+      'gold': 0,
+      'paper': 0,
+      'tea': 0,
+      'gunpowder': 0,
+      'porcelain': 0
+      }
+
+    valueMatrix = {
+      'silver': 1,
+      'silk': 20,
+      'honey': 10,
+      'ivory': 20,
+      'textiles': 10,
+      'gold': 30,
+    }
+    valueChecker = {
+      'silver': 1,
+      'silk': 20,
+      'honey': 10,
+      'ivory': 20,
+      'textiles': 10,
+      'gold': 30,
+      'tea': 10,
+      'gunpowder': 20,
+      'porcelain': 20,
+    }
+    chineseMarket = {
+      'tea': 5,
+      'gunpowder': 5,
+      'porcelain': 10,
+    }
+    stats = {
+      'food': 100,
+      'water': 100,
+      'morale': 100,
+      'durability': 100,
+      'speed': 1
+    }
+    weights = {
+      'silver': 10, 
+      'silk': 1, 
+      'honey': 0.5,
+      'ivory': 5,
+      'textiles': 0.5,
+      'gold': 8,
+      'paper': 1,
+      'tea': 3,
+      'gunpowder': 4,
+      'porcelain': 4
+    }
+    while (stage <= 6):
+        if isAlive == False:
+            break
+        stage, hasHappened, isAlive = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty, chineseMarket, weekCounter, weight=weights)
+    while (stage >= 0):
+        if isAlive == False:
+            break
+        stage, hasHappened, isAlive = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket, weekCounter=weekCounter, weight=weights)
+    replayComparation = input('Press 1 to replay, 2 to quit: ')
+    while replayComparation not in ('1', '2'):
+        replayComparation = input('Please either enter 1 or 2 for replay or quitting respectively: ')
+    if replayComparation == '1':
+        replay = True
+    elif replayComparation == '2':
+        replay = False
+        print('Thank you for playing Oregano Trail: A Silk Road Simulator')
 
 if( __name__ == '__main__'):
   main()

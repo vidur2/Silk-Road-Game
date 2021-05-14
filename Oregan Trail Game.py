@@ -75,14 +75,14 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
     # lines 47-54 are used to get user input and reformat it
     tradeString = input('Enter your trade in the following format(desiredItem:silverAmount desiredItem2:silverAmount)\n If you want to buy food enter the format (food:replenishing amount) ')
     splitTrade = tradeString.split()
-    counter = 1
+    counter = 0
     statPositions = []
     falliabilityChecker = None
     for possibleFault in splitTrade:
-        counter = counter + 1
         while ':' not in possibleFault:
-            tradeString = input(f'Please reenter trade request {counter}')
-            splitTrade[counter - 1] = tradeString
+            possibleFault = input(f'Please reenter trade request {counter + 1}: ')
+            splitTrade[counter] = possibleFault
+        counter = counter + 1
     counter = 0
     for element in splitTrade:
         newString = element.replace(':', ' ').split()

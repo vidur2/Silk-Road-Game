@@ -209,7 +209,7 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
     possibleActions = ('map', 'trade', 'proceed', 'price check', 'inventory', 'help commands', 'help info')
     action = input('\nEnter your next action: ')
     while action not in possibleActions:
-        action = input('\nInvalid input \nReenter your next action: ')
+        action = input('\nInvalid input \n\nReenter your next action: ')
     if action == 'map':
         print('\nMap:')
         stagePrinter(stage)
@@ -253,9 +253,9 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         print(value)
 
         if stage == 1:
-          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad, the first major centre of trade of 6 you will encounter on your journey to Xi'an, China. With the large distance to China, Eastern goods are ratger expensive here, while Western goods and local specialties such as textiles are cheap here.")
+          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad, the first major centre of trade of 6 you will encounter on your journey to Xi'an, China. With the large distance to China, Eastern goods are rather expensive here, while Western goods and local specialties such as textiles are cheap here.")
         elif stage == 2:
-          print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. ETC ETC")
+          print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. With the Caspian Sea and Persian Gulf to the North and South, caravans were funnelled into Rey, leading")
         elif stage == 3:
           print("\n{-|-|-|O|-|-|-}\nYou are now entering Merv. ETC ETC")
         elif stage == 4:
@@ -290,6 +290,9 @@ def main():
   if stage == 0:
       print("\nYou are in Constantinople, a Western city at the start of the Silk Road. Here you should purchase items for your upcoming journey. Remember to acquire goods for trading, food, water, spare equipment, entertainment, and defensive items. You can do the following actions: map, price check, trade, inventory, and proceed. Map checks your location. Price check displays prices in the following format: 'Good': Cost in silver. Trade allows you to buy and sell; trades should be input in format [TBD]. Inventory displays what goods you own, and proceed lets you leave the city and proceed to the next one.")
       print('You can access the list of commands and their explanations and a brief explanation of game principles by inputting "help commands" and "help info", respectively")')
+  if 'food' or 'water' == 0:
+    print("You died!")
+
   
   yourInventory = {
       'silver': 200, 

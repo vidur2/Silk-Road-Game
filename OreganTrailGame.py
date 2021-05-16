@@ -5,7 +5,7 @@ Oregano Trail
 # Preprocessor Directives
 from random import randint
 import os
-# Test
+
 # Function that is used to apply debuffs to each stat each time 'trade' or 'proceed' action is taken
 def newDay(statsDictionary, difficulty, weight, inventory):
     # Debuffs are randomly generated and multiplied by user-set difficulty
@@ -341,8 +341,6 @@ def scoreCalculator(inventory, value):
 
 def main():
   stage = 0
-  hasHappened = False
-  weekCounter = 0
   isAlive = True
   replay = True
   print("The Oregano Trail: a Silk Road Simulator \nby Vidur Modgil and Daniel Chen \n")

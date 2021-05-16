@@ -4,7 +4,6 @@ Oregano Trail
 '''
 # Preprocessor Directives
 from random import randint
-import os
 
 # Function that is used to apply debuffs to each stat each time 'trade' or 'proceed' action is taken
 def newDay(statsDictionary, difficulty, weight, inventory):

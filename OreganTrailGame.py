@@ -4,6 +4,7 @@ Oregano Trail
 '''
 # Preprocessor Directives
 from random import randint
+import os
 
 # Function that is used to apply debuffs to each stat each time 'trade' or 'proceed' action is taken
 def newDay(statsDictionary, difficulty, weight, inventory):
@@ -60,20 +61,52 @@ def trade(desiredItem, silverAmount, dict1, value):
   else:
     return False
 
+def sell(sellingItem, amount, dict1, value):
+    if sellingItem == 'silver' or sellingItem not in list(dict1.keys()):
+        return False
+    elif dict1[sellingItem] - amount >= 0:
+        dict1[sellingItem] = dict1[sellingItem] - amount
+        dict1['silver'] = dict1['silver'] + amount * value[sellingItem]/4
+        return True
+    else:
+        return False
+
 # Uses the trade() method iteratively with a list to make multiple trades in one
-def fullTrade(items, dict2, valueDict):
+def fullTrade(items, dict2, valueDict, isSell):
     # Initializes list which will be returned
     returnValue = []
+    isSuccesful = None
     for item in items:
-        isSuccesful = trade(item[0], item[1], dict2, value=valueDict)                  # isSuccesful is the True/False value returned by trade
+        if isSell == False:
+            isSuccesful = trade(item[0], item[1], dict2, value=valueDict)                  # isSuccesful is the True/False value returned by trade
+        elif isSell == True:
+            isSuccesful = sell(item[0], item[1], dict2, value=valueDict)
         returnValue.append(isSuccesful)                  # This value is then appended to a list, the list will be used for error catching later
     print('Your inventory after the trade is ' + str(dict2))
     return returnValue
 
+def sellPossible(inventory):
+    possibleItems = list(inventory.keys())
+    possibleItems.remove('silver')
+    itemValues = []
+    for item in possibleItems:
+        itemValues.append(inventory[item])
+    if sum(itemValues) == 0:
+        return False
+    else:
+        return True
+
 # Uses the previous methods to execute a trade based on direct user input
 def stringTradeGenerator(dict1, valueDict, statsDict):
     # lines 47-54 are used to get user input and reformat it
-    tradeString = input('Enter your trade in the following format(desiredItem:silverAmount desiredItem2:silverAmount)\n If you want to buy food enter the format (food:replenishing amount) ')
+    buyOrSell = input('Would you like to buy using silver or sell an item for silver? Enter either "buy" or "sell": ')
+    canSell = sellPossible(dict1)
+    possibleBuySell = ('buy', 'sell')
+    while buyOrSell not in possibleBuySell:
+        buyOrSell = input('Please enter a valid input for buying or selling silver: ')
+    while canSell == False and buyOrSell != 'buy':
+        buyOrSell = input('Please enter a valid input, you cannot sell any items. Enter buy to continue: ')
+    tradeString = input('Enter your trade in the following format(desiredItem:silverAmount desiredItem2:silverAmount)\n If you want to buy food enter the format (food:replenishing amount)\n If you are selling an item enter the format(itemBeingSold:AmountOfItemSold) ')
     splitTrade = tradeString.split()
     counter = 0
     statPositions = []
@@ -102,8 +135,13 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
     for position in statPositions:
       del splitTrade[position-counter]
       counter = counter + 1
-    falliabilityChecker = fullTrade(splitTrade, dict1,valueDict=valueDict)                  # Executes full trade based on user input
-
+    
+    falliabilityChecker = None
+    if buyOrSell == 'buy':
+        falliabilityChecker = fullTrade(splitTrade, dict1, valueDict=valueDict, isSell=False)                  # Executes full trade based on user input
+    elif buyOrSell == 'sell':
+        falliabilityChecker = fullTrade(splitTrade, dict1, valueDict=valueDict, isSell=True)
+    
       # The error catching from earlier is applied here
     while False in falliabilityChecker:
         manipulatableList = falliabilityChecker.copy()                  # Makes a copy of the list which is being used as a condition in the while loop
@@ -153,7 +191,10 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
             splitTrade[counter] = newString
             splitTrade[counter][1] = int(splitTrade[counter][1])
             counter = counter + 1
-        falliabilityChecker = fullTrade(splitTrade, dict1, valueDict=valueDict)
+        if buyOrSell == 'buy':
+            falliabilityChecker = fullTrade(splitTrade, dict1, valueDict=valueDict, isSell=False)
+        elif buyOrSell == 'sell':
+            falliabilityChecker = fullTrade(splitTrade, dict1, valueDict=valueDict, isSell=True)
         
 
 def weightOfThings(inventory, weightDict):
@@ -291,6 +332,13 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         return stage, True, isAlive
     return stage, False, isAlive
 
+def scoreCalculator(inventory, value):
+    allItems = list(inventory.keys())
+    valueReturnable = 0
+    for item in allItems:
+        valueReturnable = inventory[item]*value[item] + valueReturnable
+    return valueReturnable 
+
 def main():
   stage = 0
   hasHappened = False
@@ -365,7 +413,7 @@ def main():
     stage = 0
     hasHappened = False
     weekCounter = 0
-    isAlive = True
+    winCondition = False
     yourInventory = {
       'silver': 200, 
       'silk': 0, 
@@ -430,14 +478,19 @@ def main():
         if isAlive == False:
             break
         stage, hasHappened, isAlive = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket, weekCounter=weekCounter, weight=weights)
-    replayComparation = input('Press 1 to replay, 2 to quit: ')
-    while replayComparation not in ('1', '2'):
-        replayComparation = input('Please either enter 1 or 2 for replay or quitting respectively: ')
-    if replayComparation == '1':
-        replay = True
-    elif replayComparation == '2':
-        replay = False
+    if stage == 0 and hasHappened == True:
+        print(f'You have completed the silk road\n Your final score is {scoreCalculator(yourInventory, valueChecker)}')
         print('Thank you for playing Oregano Trail: A Silk Road Simulator')
+        replay = False
+    else:
+        replayComparation = input('Press 1 to replay, 2 to quit: ')
+        while replayComparation not in ('1', '2'):
+            replayComparation = input('Please either enter 1 or 2 for replay or quitting respectively: ')
+        if replayComparation == '1':
+            replay = True
+        elif replayComparation == '2':
+            replay = False
+            print('Thank you for playing Oregano Trail: A Silk Road Simulator')
 
 if( __name__ == '__main__'):
   main()

@@ -352,63 +352,7 @@ def main():
   if stage == 0:
       print("\nYou are in Constantinople, a Western city at the start of the Silk Road. Here you should purchase items for your upcoming journey. Remember to acquire goods for trading, food, water, spare equipment, entertainment, and defensive items. You can do the following actions: map, price check, trade, inventory, and proceed. Map checks your location. Price check displays prices in the following format: 'Good': Cost in silver. Trade allows you to buy and sell; trades should be input in format [TBD]. Inventory displays what goods you own, and proceed lets you leave the city and proceed to the next one.")
       print('You can access the list of commands and their explanations and a brief explanation of game principles by inputting "help commands" and "help info", respectively")')
-  
-  yourInventory = {
-      'silver': 200, 
-      'silk': 0, 
-      'honey': 0,
-      'ivory': 0,
-      'textiles': 0,
-      'gold': 0,
-      'paper': 0,
-      'tea': 0,
-      'gunpowder': 0,
-      'porcelain': 0
-      }
 
-  valueMatrix = {
-      'silver': 1,
-      'silk': 20,
-      'honey': 10,
-      'ivory': 20,
-      'textiles': 10,
-      'gold': 30,
-  }
-  valueChecker = {
-    'silver': 1,
-    'silk': 20,
-    'honey': 10,
-    'ivory': 20,
-    'textiles': 10,
-    'gold': 30,
-    'tea': 10,
-    'gunpowder': 20,
-    'porcelain': 20,
-  }
-  chineseMarket = {
-    'tea': 5,
-    'gunpowder': 5,
-    'porcelain': 10,
-  }
-  stats = {
-      'food': 100,
-      'water': 100,
-      'morale': 100,
-      'durability': 100,
-      'speed': 1
-  }
-  weights = {
-      'silver': 10, 
-      'silk': 1, 
-      'honey': 0.5,
-      'ivory': 5,
-      'textiles': 0.5,
-      'gold': 8,
-      'paper': 1,
-      'tea': 3,
-      'gunpowder': 4,
-      'porcelain': 4
-      }
   while(replay == True):
     stage = 0
     hasHappened = False

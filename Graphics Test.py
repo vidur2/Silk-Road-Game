@@ -15,7 +15,7 @@ def prompt(category, prompt):
 
 def main():
     dirname = os.path.dirname(__file__)
-    filename = os.path.join(dirname, 'Background Map.png')
+    filename = os.path.join(dirname, 'Graphical Elements/Background Map.png')
     tr = turtle.Turtle()
     wn = turtle.Screen()
     wn.bgpic(filename)

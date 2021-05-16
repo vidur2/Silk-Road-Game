@@ -62,12 +62,11 @@ def trade(desiredItem, silverAmount, dict1, value):
     return False
 
 def sell(sellingItem, amount, dict1, value):
-    if sellingItem != 'silver' or sellingItem not in list(dict1.keys()):
+    if sellingItem == 'silver' or sellingItem not in list(dict1.keys()):
         return False
-
     elif dict1[sellingItem] - amount >= 0:
         dict1[sellingItem] = dict1[sellingItem] - amount
-        dict1['silver'] = dict1['silver'] + amount * value['silver']
+        dict1['silver'] = dict1['silver'] + amount * value[sellingItem]/4
         return True
     else:
         return False
@@ -86,13 +85,27 @@ def fullTrade(items, dict2, valueDict, isSell):
     print('Your inventory after the trade is ' + str(dict2))
     return returnValue
 
+def sellPossible(inventory):
+    possibleItems = list(inventory.keys())
+    possibleItems.remove('silver')
+    itemValues = []
+    for item in possibleItems:
+        itemValues.append(inventory[item])
+    if sum(itemValues) == 0:
+        return False
+    else:
+        return True
+
 # Uses the previous methods to execute a trade based on direct user input
 def stringTradeGenerator(dict1, valueDict, statsDict):
     # lines 47-54 are used to get user input and reformat it
     buyOrSell = input('Would you like to buy using silver or sell an item for silver? Enter either "buy" or "sell": ')
+    canSell = sellPossible(dict1)
     possibleBuySell = ('buy', 'sell')
     while buyOrSell not in possibleBuySell:
         buyOrSell = input('Please enter a valid input for buying or selling silver: ')
+    while canSell == False and buyOrSell != 'buy':
+        buyOrSell = input('Please enter a valid input, you cannot sell any items. Enter buy to continue: ')
     tradeString = input('Enter your trade in the following format(desiredItem:silverAmount desiredItem2:silverAmount)\n If you want to buy food enter the format (food:replenishing amount)\n If you are selling an item enter the format(itemBeingSold:AmountOfItemSold) ')
     splitTrade = tradeString.split()
     counter = 0

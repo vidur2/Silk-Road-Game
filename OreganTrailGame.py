@@ -254,10 +254,11 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
     speed = statsDictionary['speed']
     if stage == 6:
       value.update(chineseMarkets)
-    elif hasHit == True:
-      chineseItems = list(chineseMarkets.keys())
-      for item in chineseItems:
-        value.pop(item)
+    elif stage == 5 and hasHit == True:
+        chineseGoods = list(chineseMarkets.keys())
+        if 'tea' in value:
+            for good in chineseGoods:
+                value.pop(good)
     possibleActions = ('map', 'trade', 'proceed', 'price check', 'inventory', 'help commands', 'help info')
     action = input('\nEnter your next action: ')
     while action not in possibleActions:
@@ -271,8 +272,9 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         weekCounter = weekCounter + 1
     elif action == 'proceed':
         negativeEvent = randint(0, 10)
-        if weekCounter < 3:
+        if weekCounter < 6/speed:
             print(f'You must stay at least {str(6/speed)} weeks at a city before traveling with your current speed\nYou have burned a turn')
+            weekCounter = weekCounter + 1
         if negativeEvent >= 8:
             possibleAttackText = [
                 'Enter Attack Texts', 
@@ -287,11 +289,10 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
             print(possibleAttackText[stage])
             currency = inventory['silver']
             print(f'You now have {str(currency)} silver left')
-        
-        if hasHit == False and weekCounter == 6/speed and negativeEvent < 5 or negativeEvent > 8:
+        if hasHit == False and weekCounter >= 6/speed and negativeEvent < 5 or negativeEvent > 8:
             stage = stage + 1
             weekCounter = 0
-        elif hasHit == True and weekCounter == 6/speed and negativeEvent < 5 or negativeEvent > 8:
+        elif hasHit == True and weekCounter >= 6/speed and negativeEvent < 5 or negativeEvent > 8:
             stage = stage - 1
             weekCounter = 0
         elif negativeEvent > 5 and negativeEvent <= 8:
@@ -327,9 +328,10 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         print("Map checks your location. \nPrice check displays prices in the following format: 'Good': Cost in silver. \nTrade allows you to buy and sell; trades should be input in format [TBD]. \nInventory displays what goods you own. \nProceed lets you leave the city and proceed to the next one.")
     elif action == 'help info':
         print("Supplies may be purchased at any of the 7 major cities (including Constantinople and Xi'an) along the route. \nLocation affects prices and goods available. \nBe wary of your food, water, caravan morale, weight of goods, and equipment durability, and your caravan speed. Speed is calculated off of factors like chance events, health of your caravan, good weight, and your caravan equipment condition. \nThe longer you spend between cities, the higher chance you have of being raided or encountering malignant conditions. \nDue to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than liquid assets, which can be lost easier in raids. \nTime is divided into units of half a month per turn, and the journey for an average trader should take around 2 years round trip. \nCities are spaced around a month and a half of travel apart from each other.")
-    if stage == 6:
+    if stage == 6 or hasHit == True:
         return stage, True, isAlive
-    return stage, False, isAlive
+    elif hasHit == False:
+        return stage, False, isAlive
 
 def scoreCalculator(inventory, value):
     allItems = list(inventory.keys())
@@ -362,7 +364,6 @@ def main():
       'ivory': 0,
       'textiles': 0,
       'gold': 0,
-      'paper': 0,
       'tea': 0,
       'gunpowder': 0,
       'porcelain': 0
@@ -387,6 +388,17 @@ def main():
       'gunpowder': 20,
       'porcelain': 20,
     }
+    valueCalculator = {
+      'silver': 1,
+      'silk': 20,
+      'honey': 10,
+      'ivory': 20,
+      'textiles': 10,
+      'gold': 30,
+      'tea': 10,
+      'gunpowder': 20,
+      'porcelain': 20,
+    } 
     chineseMarket = {
       'tea': 5,
       'gunpowder': 5,
@@ -411,16 +423,20 @@ def main():
       'gunpowder': 4,
       'porcelain': 4
     }
-    while (stage <= 6):
+    while (stage < 6):
         if isAlive == False:
             break
         stage, hasHappened, isAlive = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty, chineseMarket, weekCounter, weight=weights)
-    while (stage >= 0):
+    while (stage > 0):
+        stageCheck = stage
+        hasHappened = True
         if isAlive == False:
             break
-        stage, hasHappened, isAlive = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket, weekCounter=weekCounter, weight=weights)
+        stage, filler, isAlive = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket, weekCounter=weekCounter, weight=weights)
+        if stageCheck < stage:
+            stage = stageCheck - 1
     if stage == 0 and hasHappened == True:
-        print(f'You have completed the silk road\n Your final score is {scoreCalculator(yourInventory, valueChecker)}')
+        print(f'You have completed the silk road\n Your final score is {scoreCalculator(yourInventory, valueCalculator)}')
         print('Thank you for playing Oregano Trail: A Silk Road Simulator')
         replay = False
     else:

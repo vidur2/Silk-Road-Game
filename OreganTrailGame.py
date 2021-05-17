@@ -232,7 +232,7 @@ def stagePrinter(stage):
         print('\nYou are in Dunhuang')
         print('{-|-|-|-|-|O|-}')
     elif stage == 6:
-        print("\nYou are in Xi'an")
+        print("\nYou are in Chang'an")
         print('{-|-|-|-|-|-|O}')
 
 def postCheck(stage, valueMatrix):
@@ -306,17 +306,17 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         print(value)
 
         if stage == 1:
-          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad, the first major centre of trade of 6 you will encounter on your journey to Xi'an, China. With the large distance to China, Eastern goods are ratger expensive here, while Western goods and local specialties such as textiles are cheap here.")
+          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad, the first major center of trade of 6 you will encounter on your journey to Chang'an, China. Situated along the Tigris River and linked to the Persian Gulf, the former capital of the Abbasid Caliphate had goods from both the maritime and overland Silk Roads. It was also a major center of learning, containing numerous academic institutions at the forefront of the world at the time, such as the House of Wisdom.")
         elif stage == 2:
-          print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. ETC ETC")
+          print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. With the Caspian Sea and Persian Gulf to the North and South, caravans were funnelled into Rey. Maritime and overland goods can be purchased here. In addition to this, Rey holds significant religious and mythological significance for the Zoroastrians of Ancient Persia, as it was a sacred place of Ahura Mazda, the supreme Zoroastrian deity, and the nearby Mt. Damavand was a key location in the Shahnameh, the national epic of Persia. ")
         elif stage == 3:
-          print("\n{-|-|-|O|-|-|-}\nYou are now entering Merv. ETC ETC")
+          print("\n{-|-|-|O|-|-|-}\nYou are now entering Merv. Situated by an oasis and by a fork between the Northern and Southern router of the Silk Road, Merv was an extremely important asset for empires, as evidenced by its history and its conquering by the Achaemenid Empire, the Greco-Bactrian Empire, the Sassanian Empire, Abbasid Caliphate, and Mongol Empire. At its height in the early 1200s, it was the largest city in the world, with over half a million people. ")
         elif stage == 4:
-          print("\n{-|-|-|-|O|-|-}\nYou are now entering Samarkand. ETC ETC")
+          print('\n{-|-|-|-|O|-|-}\nYou are now entering Samarkand, the capital of the Timurid Empire and the birthplace of the Timurid Renaissance. In addition to being a major academic center, the city was also known for its architecture, describe by Ibn Battuta as "one of the greatest and finest of cities, and most perfect of them in beauty". The city is on the UNESCO list of World Heritage as Samarkand – Crossroads of Cultures.')
         elif stage == 5:
-          print("\n{-|-|-|-|-|O|-}\nYou are now entering Dunhuang. ETC ETC")
+          print("\n{-|-|-|-|-|O|-}\nYou are now entering Dunhuang. Dunhuang was an oasis town, supported by the Crescent Lake, built on the edge of the Gobi desert. Chinese traders departing for the West would buy supplies and rest before their journey across the Gobi. The name Dunhuang means Blazing Beacon, as it controlled the entrance to the Gansu corridor, a narrow stretch of easily traversable land leading straight to the Chinese capital of Chang'an, and would thus warn the capital of any raids from Central Asia.")
         elif stage == 6:
-          print("\n{-|-|-|-|-|-|O}\nYou are now entering Xi'an. ETC ETC")
+          print("\n{-|-|-|-|-|-|O}\nYou are now entering Chang'an (today known as Xi'an). Congratulations! You've made it to the capital of ancient China, the end of the Silk Road")
     
     elif action == 'price check':
         print('\nPrices:')

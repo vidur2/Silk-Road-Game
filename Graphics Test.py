@@ -21,6 +21,11 @@ def main():
         tr.goto(x=-350, y=100)
         tr.pendown()
         tr.goto(x=-230, y=0)
+        tr.goto(x=-180, y=10)
+        tr.goto(x=-150, y=20)
+        tr.goto(x=-50, y=100)
+        tr.goto(200, 100)
+        tr.goto(250, -80)
         wn.mainloop()
     except:
         print('Done!')

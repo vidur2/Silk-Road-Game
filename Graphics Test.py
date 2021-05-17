@@ -27,6 +27,7 @@ def main():
         tr.goto(200, 100)
         tr.goto(250, -80)
         wn.mainloop()
+        print('Done!')
     except:
         print('Done!')
 if __name__ == '__main__':

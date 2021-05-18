@@ -435,6 +435,8 @@ def main():
         stage, filler, isAlive = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket, weekCounter=weekCounter, weight=weights)
         if stageCheck < stage:
             stage = stageCheck - 1
+        if stage == 1:
+            stage = 0
     if stage == 0 and hasHappened == True:
         print(f'You have completed the silk road\n Your final score is {scoreCalculator(yourInventory, valueCalculator)}')
         print('Thank you for playing Oregano Trail: A Silk Road Simulator')

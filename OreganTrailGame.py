@@ -329,9 +329,9 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
     elif action == 'help info':
         print("Supplies may be purchased at any of the 7 major cities (including Constantinople and Xi'an) along the route. \nLocation affects prices and goods available. \nBe wary of your food, water, caravan morale, weight of goods, and equipment durability, and your caravan speed. Speed is calculated off of factors like chance events, health of your caravan, good weight, and your caravan equipment condition. \nThe longer you spend between cities, the higher chance you have of being raided or encountering malignant conditions. \nDue to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than liquid assets, which can be lost easier in raids. \nTime is divided into units of half a month per turn, and the journey for an average trader should take around 2 years round trip. \nCities are spaced around a month and a half of travel apart from each other.")
     if stage == 6 or hasHit == True:
-        return stage, True, isAlive
+        return stage, True, isAlive, action
     elif hasHit == False:
-        return stage, False, isAlive
+        return stage, False, isAlive, action
 
 def scoreCalculator(inventory, value):
     allItems = list(inventory.keys())
@@ -426,16 +426,16 @@ def main():
     while (stage < 6):
         if isAlive == False:
             break
-        stage, hasHappened, isAlive = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty, chineseMarket, weekCounter, weight=weights)
-    while (stage > 0):
+        stage, hasHappened, isAlive, action = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty, chineseMarket, weekCounter, weight=weights)
+    while (stage >= 0):
         stageCheck = stage
         hasHappened = True
         if isAlive == False:
             break
-        stage, filler, isAlive = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket, weekCounter=weekCounter, weight=weights)
-        if stageCheck < stage:
+        stage, filler, isAlive, action = nextAction(yourInventory, valueMatrix, stage, hasHappened, stats, difficulty = difficulty, chineseMarkets= chineseMarket, weekCounter=weekCounter, weight=weights)
+        if stageCheck < stage and action == 'proceed':
             stage = stageCheck - 1
-        if stage == 1:
+        elif stageCheck == 1 and action == 'proceed':
             stage = 0
     if stage == 0 and hasHappened == True:
         print(f'You have completed the silk road\n Your final score is {scoreCalculator(yourInventory, valueCalculator)}')

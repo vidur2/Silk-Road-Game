@@ -20,7 +20,7 @@ def newDay(statsDictionary, difficulty, weight, inventory):
     statsDictionary['morale'] = statsDictionary['morale'] - debuff4
     
     print('Your current weight is ' + str(weightOfThings(inventory, weight)))
-    statsDictionary['speed'] = 100000*(20/3)*(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])/weightOfThings(inventory, weight)
+    statsDictionary['speed'] = (20/3)*(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])/weightOfThings(inventory, weight)
 
     # Each day the stats are printed back to the user
     print(statsDictionary)

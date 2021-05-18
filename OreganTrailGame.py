@@ -12,18 +12,20 @@ def newDay(statsDictionary, difficulty, weight, inventory):
     debuff2 = difficulty/5 * randint(10, 20)
     debuff3 = difficulty/5 * randint(10, 20)
     debuff4 = difficulty/5 * randint(10, 20)
+
     # Debuffs are applied here
     statsDictionary['food'] = statsDictionary['food'] - debuff1
     statsDictionary['water'] = statsDictionary['water'] - debuff2
     statsDictionary['durability'] = statsDictionary['durability'] - debuff3
     statsDictionary['morale'] = statsDictionary['morale'] - debuff4
+    
     print('Your current weight is ' + str(weightOfThings(inventory, weight)))
-    # print(inventory)
-    # print(weight)
-    statsDictionary['speed'] = (20/3)*(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])/weightOfThings(inventory, weight)
+    statsDictionary['speed'] = 100000*(20/3)*(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])/weightOfThings(inventory, weight)
+
     # Each day the stats are printed back to the user
     print(statsDictionary)
     allStats = list(statsDictionary.keys())
+
     # Checks if any variable is less than or equal to 0
     for stat in allStats:
         if statsDictionary[stat] <= 0:
@@ -37,6 +39,7 @@ def isIntable(number):
     try:
         int(number)
         return True
+
     except:
         return False
 
@@ -50,37 +53,46 @@ def trade(desiredItem, silverAmount, dict1, value):
   # isIntable() is used here to make sure that the user entered a number, if it is not intable, then the program will go into the else catch
   elif dict1['silver'] - silverAmount >= 0 and isIntable(silverAmount):
     scalar = randint(0, 10)
+
     if scalar > 5:
         dict1[desiredItem] = dict1[desiredItem] + 2*(silverAmount/value[desiredItem])
     else:
         dict1[desiredItem] = dict1[desiredItem] + 0.5*(silverAmount/value[desiredItem])
+    
     dict1['silver'] = dict1['silver'] - silverAmount
     return True
   # In all other cases False is return, indicating bad input(see first if catch)
+  
   else:
     return False
 
 def sell(sellingItem, amount, dict1, value):
     if sellingItem == 'silver' or sellingItem not in list(dict1.keys()):
         return False
+
     elif dict1[sellingItem] - amount >= 0:
         dict1[sellingItem] = dict1[sellingItem] - amount
         dict1['silver'] = dict1['silver'] + amount * value[sellingItem]/4
         return True
+
     else:
         return False
 
 # Uses the trade() method iteratively with a list to make multiple trades in one
 def fullTrade(items, dict2, valueDict, isSell):
+
     # Initializes list which will be returned
     returnValue = []
     isSuccesful = None
+    
     for item in items:
         if isSell == False:
             isSuccesful = trade(item[0], item[1], dict2, value=valueDict)                  # isSuccesful is the True/False value returned by trade
+        
         elif isSell == True:
             isSuccesful = sell(item[0], item[1], dict2, value=valueDict)
         returnValue.append(isSuccesful)                  # This value is then appended to a list, the list will be used for error catching later
+   
     print('Your inventory after the trade is ' + str(dict2))
     return returnValue
 
@@ -88,10 +100,12 @@ def sellPossible(inventory):
     possibleItems = list(inventory.keys())
     possibleItems.remove('silver')
     itemValues = []
+    
     for item in possibleItems:
         itemValues.append(inventory[item])
     if sum(itemValues) == 0:
         return False
+    
     else:
         return True
 
@@ -101,29 +115,37 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
     buyOrSell = input('Would you like to buy using silver or sell an item for silver? Enter either "buy" or "sell": ')
     canSell = sellPossible(dict1)
     possibleBuySell = ('buy', 'sell')
+    
     while buyOrSell not in possibleBuySell:
         buyOrSell = input('Please enter a valid input for buying or selling silver: ')
+    
     while canSell == False and buyOrSell != 'buy':
         buyOrSell = input('Please enter a valid input, you cannot sell any items. Enter buy to continue: ')
+    
     tradeString = input('Enter your trade in the following format(desiredItem:silverAmount desiredItem2:silverAmount)\n If you want to buy food enter the format (food:replenishing amount)\n If you are selling an item enter the format(itemBeingSold:AmountOfItemSold) ')
     splitTrade = tradeString.split()
     counter = 0
     statPositions = []
     falliabilityChecker = None
+    
     for possibleFault in splitTrade:
         while ':' not in possibleFault:
             possibleFault = input(f'Please reenter trade request {counter + 1}: ')
             splitTrade[counter] = possibleFault
         counter = counter + 1
+    
     counter = 0
+    
     for element in splitTrade:
         newString = element.replace(':', ' ').split()
         splitTrade[counter] = newString
         splitTrade[counter][1] = int(splitTrade[counter][1])
         counter = counter + 1
+    
     statsDict.pop('speed')
     allStats = tuple(statsDict.keys())
     counter = 0
+    
     for trade in splitTrade:
       if trade[0] in allStats:
         statsDict[trade[0]] = statsDict[trade[0]] + trade[1]
@@ -131,11 +153,13 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
         statPositions.append(counter)
       counter = counter + 1
     counter = 0
+    
     for position in statPositions:
       del splitTrade[position-counter]
       counter = counter + 1
     
     falliabilityChecker = None
+    
     if buyOrSell == 'buy':
         falliabilityChecker = fullTrade(splitTrade, dict1, valueDict=valueDict, isSell=False)                  # Executes full trade based on user input
     elif buyOrSell == 'sell':
@@ -347,7 +371,7 @@ def main():
   print("The Oregano Trail: a Silk Road Simulator \nby Vidur Modgil and Daniel Chen \n")
   print('The Silk Road was a trading network that connected the West with China. \nGoods such as textiles, porcelain, and silk traveled along the overland route. You are a trader about to attempt a journey to China. You have 200 silver to spend. You may purchase supplies for your upcoming journey in your starting city, in any of the numerous cities along the route, or in China. Keep in mind that location affects prices and goods available. Be wary of your food, water, caravan morale, weight of goods, and equipment durability, and your caravan speed, which is based off of factors like chance events, health of your caravan, good weight, and your caravan equipment condition. The longer you spend between cities, the higher chance you have of being raided or encountering malignant conditions. Due to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than liquid assets, which can be lost easier in raids. Time is divided into units of half a month per "turn", and the journey for an average trader should take around 2 years round trip. Cities are spaced around a month and a half of travel apart from each other. \n')
   input('Press enter when you are ready to play: ')
-  difficulty = float(input('\nEnter any difficulty (can be decimal), where <1 = "Dying is illegal", 5 = "Pax Mongolica", 10 = "Recommended", >100 = "Sudden Death Syndrome": '))
+  difficulty = float(input('\nEnter any difficulty (can be decimal), where <1 = "Dying is illegal", 1-3 = "Pax Mongolica", 3-5 = "Recommended", >10 = "Sudden Death Syndrome": '))
   if stage == 0:
       print("\nYou are in Constantinople, a Western city at the start of the Silk Road. Here you should purchase items for your upcoming journey. Remember to acquire goods for trading, food, water, spare equipment, entertainment, and defensive items. You can do the following actions: map, price check, trade, inventory, and proceed. Map checks your location. Price check displays prices in the following format: 'Good': Cost in silver. Trade allows you to buy and sell; trades should be input in format [TBD]. Inventory displays what goods you own, and proceed lets you leave the city and proceed to the next one.")
       print('You can access the list of commands and their explanations and a brief explanation of game principles by inputting "help commands" and "help info", respectively")')
@@ -437,6 +461,11 @@ def main():
             stage = stageCheck - 1
         elif stageCheck == 1 and action == 'proceed':
             stage = 0
+        elif stage == 4 and action == 'proceed':
+            stage = 3
+        if stage == 0:
+            hasHappened = True
+            break
     if stage == 0 and hasHappened == True:
         print(f'You have completed the silk road\n Your final score is {scoreCalculator(yourInventory, valueCalculator)}')
         print('Thank you for playing Oregano Trail: A Silk Road Simulator')

@@ -122,7 +122,7 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
     while canSell == False and buyOrSell != 'buy':
         buyOrSell = input('Please enter a valid input, you cannot sell any items. Enter buy to continue: ')
     
-    tradeString = input('Enter your trade in the following format(desiredItem:silverAmount desiredItem2:silverAmount)\n If you want to buy food enter the format (food:replenishing amount)\n If you are selling an item enter the format(itemBeingSold:AmountOfItemSold) ')
+    tradeString = input('Enter your trade in the following format: desiredItem:silverAmount (desiredItem2:silverAmount, etc)\n If you want to buy food enter the format (food:replenishing amount)\n If you are selling an item enter the format(itemBeingSold:AmountOfItemSold) ')
     splitTrade = tradeString.split()
     counter = 0
     statPositions = []
@@ -330,20 +330,34 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         print(value)
 
         if stage == 1:
-          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad, the first major center of trade of 6 you will encounter on your journey to Chang'an, China. Situated along the Tigris River and linked to the Persian Gulf, the former capital of the Abbasid Caliphate had goods from both the maritime and overland Silk Roads. It was also a major center of learning, containing numerous academic institutions at the forefront of the world at the time, such as the House of Wisdom.")
+          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad, the first major center of trade of 6 you will encounter on your journey to Chang'an, China.")
+          input(' ')
+          print(" Situated along the Tigris River and linked to the Persian Gulf, the former capital of the Abbasid Caliphate had goods from both the maritime and overland Silk Roads. ")
+          input(' ')
+          print("It was also a major center of learning, containing numerous academic institutions at the forefront of the world at the time, such as the House of Wisdom.")
         elif stage == 2:
-          print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. With the Caspian Sea and Persian Gulf to the North and South, caravans were funnelled into Rey. Maritime and overland goods can be purchased here. In addition to this, Rey holds significant religious and mythological significance for the Zoroastrians of Ancient Persia, as it was a sacred place of Ahura Mazda, the supreme Zoroastrian deity, and the nearby Mt. Damavand was a key location in the Shahnameh, the national epic of Persia. ")
+          print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. With the Caspian Sea and Persian Gulf to the North and South, caravans were funnelled into Rey. Maritime and overland goods can be purchased here.  ")
+          input(' ')
+          print('In addition to this, Rey holds significant religious and mythological significance for the Zoroastrians of Ancient Persia, as it was a sacred place of Ahura Mazda, the supreme Zoroastrian deity, and the nearby Mt. Damavand was a key location in the Shahnameh, the national epic of Persia.')
         elif stage == 3:
-          print("\n{-|-|-|O|-|-|-}\nYou are now entering Merv. Situated by an oasis and by a fork between the Northern and Southern router of the Silk Road, Merv was an extremely important asset for empires, as evidenced by its history and its conquering by the Achaemenid Empire, the Greco-Bactrian Empire, the Sassanian Empire, Abbasid Caliphate, and Mongol Empire. At its height in the early 1200s, it was the largest city in the world, with over half a million people. ")
+          print("\n{-|-|-|O|-|-|-}\nYou are now entering Merv. Situated by an oasis and by a fork between the Northern and Southern router of the Silk Road, Merv was an extremely important asset for empires, as evidenced by its history and its conquering by the Achaemenid Empire, the Greco-Bactrian Empire, the Sassanian Empire, Abbasid Caliphate, and Mongol Empire. ")
+          input(' ')
+          print("At its height in the early 1200s, it was the largest city in the world, with over half a million people. ")
         elif stage == 4:
-          print('\n{-|-|-|-|O|-|-}\nYou are now entering Samarkand, the capital of the Timurid Empire and the birthplace of the Timurid Renaissance. In addition to being a major academic center, the city was also known for its architecture, describe by Ibn Battuta as "one of the greatest and finest of cities, and most perfect of them in beauty". The city is on the UNESCO list of World Heritage as Samarkand – Crossroads of Cultures.')
+          print('\n{-|-|-|-|O|-|-}\nYou are now entering Samarkand, the capital of the Timurid Empire and the birthplace of the Timurid Renaissance.')
+          input(' ')
+          print('In addition to being a major academic center, the city was also known for its architecture, describe by Ibn Battuta as "one of the greatest and finest of cities, and most perfect of them in beauty".')
+          input(' ')
+          print('The city is on the UNESCO list of World Heritage as Samarkand – Crossroads of Cultures.')
         elif stage == 5:
-          print("\n{-|-|-|-|-|O|-}\nYou are now entering Dunhuang. Dunhuang was an oasis town, supported by the Crescent Lake, built on the edge of the Gobi desert. Chinese traders departing for the West would buy supplies and rest before their journey across the Gobi. The name Dunhuang means Blazing Beacon, as it controlled the entrance to the Gansu corridor, a narrow stretch of easily traversable land leading straight to the Chinese capital of Chang'an, and would thus warn the capital of any raids from Central Asia.")
+          print("\n{-|-|-|-|-|O|-}\nYou are now entering Dunhuang. Dunhuang was an oasis town, supported by the Crescent Lake, built on the edge of the Gobi desert. Chinese traders departing for the West would buy supplies and rest before their journey across the Gobi.")
+          input(' ')
+          print("The name Dunhuang means Blazing Beacon, as it controlled the entrance to the Gansu corridor, a narrow stretch of easily traversable land leading straight to the Chinese capital of Chang'an, and would thus warn the capital of any raids from Central Asia.")
         elif stage == 6:
           print("\n{-|-|-|-|-|-|O}\nYou are now entering Chang'an (today known as Xi'an). Congratulations! You've made it to the capital of ancient China, the end of the Silk Road")
     
     elif action == 'price check':
-        print('\nPrices:')
+        print('\nPrices:\n')
         print(value)
     elif action == 'inventory':
       print('\nInventory:')
@@ -371,7 +385,7 @@ def main():
   print("The Oregano Trail: a Silk Road Simulator \nby Vidur Modgil and Daniel Chen \n")
   print('The Silk Road was a trading network that connected the West with China. \nGoods such as textiles, porcelain, and silk traveled along the overland route. You are a trader about to attempt a journey to China.')
   input('\nPress enter to proceed:')
-  print('\nYou have 200 silver to spend. You may purchase supplies for your upcoming journey in your starting city, in any of the numerous cities along the route, or in China. Keep in mind that location affects prices and goods available.')
+  print('\nYou have 100 silver to spend. You may purchase supplies for your upcoming journey in your starting city, in any of the numerous cities along the route, or in China. Keep in mind that location affects prices and goods available.')
   input(' ')
   print('Be wary of your food, water, caravan morale, weight of goods, equipment durability, and your caravan speed.')
   input(' ')
@@ -385,7 +399,7 @@ def main():
   if stage == 0:
       print("\nYou are in Constantinople, a Western city at the start of the Silk Road. Here you should purchase items for your upcoming journey. Remember to acquire goods for trading, food, water, spare equipment, entertainment, and defensive items.")
       input(' ')
-      print("You can do the following actions: map, price check, trade, inventory, and proceed. \n\nMap checks your location. \nPrice check displays prices in the following format: 'Good': Cost in silver. \nTrade allows you to buy and sell; trades should be input in format [TBD]. \nInventory displays what goods you own. \nProceed lets you leave the city and proceed to the next one.")
+      print("You can do the following actions: map, price check, trade, inventory, and proceed. \n\nMap checks your location. \nPrice check displays prices in the following format: 'Good': Cost in silver. \nTrade allows you to buy and sell. \nInventory displays what goods you own. \nProceed lets you leave the city and proceed to the next one.")
       input(' ')
       print('You can access the list of commands and their explanations and a brief explanation of game principles by inputting "help commands" and "help info", respectively")')
       input(' ')
@@ -396,7 +410,7 @@ def main():
     weekCounter = 0
     winCondition = False
     yourInventory = {
-      'silver': 200, 
+      'silver': 100, 
       'silk': 0, 
       'honey': 0,
       'ivory': 0,

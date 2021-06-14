@@ -2,6 +2,7 @@
 World History
 Oregano Trail
 '''
+
 # Preprocessor Directives
 from random import randint
 
@@ -11,16 +12,17 @@ def newDay(statsDictionary, difficulty, weight, inventory):
     debuff1 = difficulty/5 * randint(10, 20)
     debuff2 = difficulty/5 * randint(10, 20)
     debuff3 = difficulty/5 * randint(10, 20)
-    debuff4 = difficulty/5 * randint(10, 20)
+    debuff4 = difficulty/5 * randint(1, 5)
 
     # Debuffs are applied here
     statsDictionary['food'] = statsDictionary['food'] - debuff1
     statsDictionary['water'] = statsDictionary['water'] - debuff2
-    statsDictionary['durability'] = statsDictionary['durability'] - debuff3
+    statsDictionary['durability'] = statsDictionary['durability'] 
     statsDictionary['morale'] = statsDictionary['morale'] - debuff4
     
     print('Your current weight is ' + str(weightOfThings(inventory, weight)))
-    statsDictionary['speed'] = (20/3)*(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])/weightOfThings(inventory, weight)
+    statsDictionary['milesPerTurn'] = (300)*(5)*(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])/weightOfThings(inventory, weight)
+    
 
     # Each day the stats are printed back to the user
     print(statsDictionary)
@@ -122,7 +124,7 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
     while canSell == False and buyOrSell != 'buy':
         buyOrSell = input('Please enter a valid input, you cannot sell any items. Enter buy to continue: ')
     
-    tradeString = input('Enter your trade in the following format(desiredItem:silverAmount desiredItem2:silverAmount)\n If you want to buy food enter the format (food:replenishing amount)\n If you are selling an item enter the format(itemBeingSold:AmountOfItemSold) ')
+    tradeString = input('Enter your trade in the following format: desiredItem:silverAmount (desiredItem2:silverAmount, etc)\n If you want to buy food enter the format (food:replenishing amount)\n If you are selling an item enter the format(itemBeingSold:AmountOfItemSold) ')
     splitTrade = tradeString.split()
     counter = 0
     statPositions = []
@@ -142,7 +144,7 @@ def stringTradeGenerator(dict1, valueDict, statsDict):
         splitTrade[counter][1] = int(splitTrade[counter][1])
         counter = counter + 1
     
-    statsDict.pop('speed')
+    statsDict.pop('milesPerTurn')
     allStats = tuple(statsDict.keys())
     counter = 0
     
@@ -272,10 +274,9 @@ def attack(inventory, statsDict):
     fendOffAbility = (statsDict['morale'] + statsDict['durability'])/800
     attackSuccess = 0.25-fendOffAbility
     inventory['silver'] = inventory['silver'] - (attackSuccess * inventory['silver'])
-
+index = 0
 def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chineseMarkets, weekCounter, weight):
     isAlive = True
-    speed = statsDictionary['speed']
     if stage == 6:
       value.update(chineseMarkets)
     elif stage == 5 and hasHit == True:
@@ -283,7 +284,7 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         if 'tea' in value:
             for good in chineseGoods:
                 value.pop(good)
-    possibleActions = ('map', 'trade', 'proceed', 'price check', 'inventory', 'help commands', 'help info')
+    possibleActions = ('map', 'trade', 'proceed', 'price check', 'inventory', 'help commands', 'help info', 'stats')
     action = input('\nEnter your next action: ')
     while action not in possibleActions:
         action = input('\nInvalid input \nReenter your next action: ')
@@ -294,56 +295,36 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
         stringTradeGenerator(inventory, value, statsDictionary)
         isAlive = newDay(statsDictionary=statsDictionary, difficulty = difficulty, weight=weight, inventory=inventory)
         weekCounter = weekCounter + 1
+    elif action == 'stats':
+      print(statsDictionary)
     elif action == 'proceed':
-        negativeEvent = randint(0, 10)
-        if weekCounter < 6/speed:
-            print(f'You must stay at least {str(6/speed)} weeks at a city before traveling with your current speed\nYou have burned a turn')
-            weekCounter = weekCounter + 1
-        if negativeEvent >= 8:
-            possibleAttackText = [
-                'Enter Attack Texts', 
-                'Formatted Like so', 
-                'You can have different', 
-                'one for each stage', 
-                'placeholder text attack', 
-                'placeholder text attack', 
-                'placeholder text attack'
-                ]
-            attack(inventory=inventory, statsDict=statsDictionary)
-            print(possibleAttackText[stage])
-            currency = inventory['silver']
-            print(f'You now have {str(currency)} silver left')
-        if hasHit == False and weekCounter >= 6/speed and negativeEvent < 5 or negativeEvent > 8:
-            stage = stage + 1
-            weekCounter = 0
-        elif hasHit == True and weekCounter >= 6/speed and negativeEvent < 5 or negativeEvent > 8:
-            stage = stage - 1
-            weekCounter = 0
-        elif negativeEvent > 5 and negativeEvent <= 8:
-            print('An extreme weather event has occoured, you must wait an extra week before traveling.')
-            weekCounter = weekCounter + 1
+        weather = randint(0, 5)
+        iDontTrustReplitPEMDAS = (0.8333)*(weightOfThings(inventory, weight))/(statsDictionary['food'] + statsDictionary['water'] + statsDictionary['durability'])
+        global index
+        estTurns = round(iDontTrustReplitPEMDAS) - index
+        counterTurn = 1
+        print("Estimated turns to the next city is:")
+        print(estTurns)
+        if weather == 3:
+          print("You ran into bad weather! It'll delay you by 1 turn.")
+          index = index - 1
+        elif counterTurn < estTurns:
+            print("After a day of travel....")
+            index = index + 1
+        elif counterTurn == estTurns: 
+          stage = stage + 1
+          index = 0
+        
+        
 
         isAlive = newDay(statsDictionary=statsDictionary, difficulty=difficulty, weight=weight, inventory=inventory)
-        print('Your Current Speed is ' + str(speed))
-        stagePrinter(stage)
         postCheck(stage, value)
         print(value)
 
-        if stage == 1:
-          print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad, the first major center of trade of 6 you will encounter on your journey to Chang'an, China. Situated along the Tigris River and linked to the Persian Gulf, the former capital of the Abbasid Caliphate had goods from both the maritime and overland Silk Roads. It was also a major center of learning, containing numerous academic institutions at the forefront of the world at the time, such as the House of Wisdom.")
-        elif stage == 2:
-          print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. With the Caspian Sea and Persian Gulf to the North and South, caravans were funnelled into Rey. Maritime and overland goods can be purchased here. In addition to this, Rey holds significant religious and mythological significance for the Zoroastrians of Ancient Persia, as it was a sacred place of Ahura Mazda, the supreme Zoroastrian deity, and the nearby Mt. Damavand was a key location in the Shahnameh, the national epic of Persia. ")
-        elif stage == 3:
-          print("\n{-|-|-|O|-|-|-}\nYou are now entering Merv. Situated by an oasis and by a fork between the Northern and Southern router of the Silk Road, Merv was an extremely important asset for empires, as evidenced by its history and its conquering by the Achaemenid Empire, the Greco-Bactrian Empire, the Sassanian Empire, Abbasid Caliphate, and Mongol Empire. At its height in the early 1200s, it was the largest city in the world, with over half a million people. ")
-        elif stage == 4:
-          print('\n{-|-|-|-|O|-|-}\nYou are now entering Samarkand, the capital of the Timurid Empire and the birthplace of the Timurid Renaissance. In addition to being a major academic center, the city was also known for its architecture, describe by Ibn Battuta as "one of the greatest and finest of cities, and most perfect of them in beauty". The city is on the UNESCO list of World Heritage as Samarkand – Crossroads of Cultures.')
-        elif stage == 5:
-          print("\n{-|-|-|-|-|O|-}\nYou are now entering Dunhuang. Dunhuang was an oasis town, supported by the Crescent Lake, built on the edge of the Gobi desert. Chinese traders departing for the West would buy supplies and rest before their journey across the Gobi. The name Dunhuang means Blazing Beacon, as it controlled the entrance to the Gansu corridor, a narrow stretch of easily traversable land leading straight to the Chinese capital of Chang'an, and would thus warn the capital of any raids from Central Asia.")
-        elif stage == 6:
-          print("\n{-|-|-|-|-|-|O}\nYou are now entering Chang'an (today known as Xi'an). Congratulations! You've made it to the capital of ancient China, the end of the Silk Road")
+        
     
     elif action == 'price check':
-        print('\nPrices:')
+        print('\nPrices:\n')
         print(value)
     elif action == 'inventory':
       print('\nInventory:')
@@ -351,7 +332,7 @@ def nextAction(inventory, value, stage, hasHit, statsDictionary, difficulty, chi
     elif action == 'help commands':
         print("\nMap checks your location. \nPrice check displays prices in the following format: 'Good': Cost in silver. \nTrade allows you to buy and sell; trades should be input in format [TBD]. \nInventory displays what goods you own. \nProceed lets you leave the city and proceed to the next one.")
     elif action == 'help info':
-        print("\nSupplies may be purchased at any of the 7 major cities (including Constantinople and Xi'an) along the route. \nLocation affects prices and goods available. \nBe wary of your food, water, caravan morale, weight of goods, and equipment durability, and your caravan speed. Speed is calculated off of factors like chance events, health of your caravan, good weight, and your caravan equipment condition. \nThe longer you spend between cities, the higher chance you have of being raided or encountering malignant conditions. \nDue to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than liquid assets, which can be lost easier in raids. \nTime is divided into units of half a month per turn, and the journey for an average trader should take around 2 years round trip. \nCities are spaced around a month and a half of travel apart from each other.")
+        print("\nSupplies may be purchased at any of the 7 major cities (including Constantinople and Xi'an) along the route, or between cities from Caravanserai. \nLocation affects prices and goods available. \nBe wary of your food, water, caravan morale, weight of goods, and your caravan speed. Speed is calculated off of factors like chance events, health of your caravan, and good weight. \nThe longer you spend between cities, the higher chance you have of encountering malignant conditions. \nDue to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than liquid assets, which can be lost easier in raids. \nTime is divided into units of half a month per turn, and the journey for an average trader should take around 2 years round trip. \nCities are spaced around a month and a half of travel apart from each other.")
     if stage == 6 or hasHit == True:
         return stage, True, isAlive, action
     elif hasHit == False:
@@ -371,24 +352,50 @@ def main():
   print("The Oregano Trail: a Silk Road Simulator \nby Vidur Modgil and Daniel Chen \n")
   print('The Silk Road was a trading network that connected the West with China. \nGoods such as textiles, porcelain, and silk traveled along the overland route. You are a trader about to attempt a journey to China.')
   input('\nPress enter to proceed:')
-  print('\nYou have 200 silver to spend. You may purchase supplies for your upcoming journey in your starting city, in any of the numerous cities along the route, or in China. Keep in mind that location affects prices and goods available.')
+  print('\nYou have 100 silver to spend. You may purchase supplies for your upcoming journey in your starting city, in any of the numerous cities along the route, or in China. Keep in mind that location affects prices and goods available.')
   input(' ')
-  print('Be wary of your food, water, caravan morale, weight of goods, equipment durability, and your caravan speed.')
+  print('Be wary of your food, water, caravan morale, weight of goods, and your caravan speed.')
   input(' ')
-  print('Speed is based off of the health of your caravan, the weight of your goods, and your caravan equipment condition. The longer you spend between cities, the higher chance you have of being raided or encountering malignant conditions.')
+  print('Speed is based off of the health of your caravan, the weight of your goods, and your caravan equipment condition. The longer you spend between cities, the higher chance you have of encountering malignant conditions.')
   input(' ')
-  print('Due to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than liquid assets, which can be lost easier in raids.')
+  print('Due to the high weight of silver, players are incentivized to take advantage of regional prices, trade, and carry goods rather than silver.')
   input(' ')
   print('Time is divided into units of half a month per "turn", and the journey for an average trader should take around 2 years round trip. Cities are spaced around a month and a half of travel apart from each other. \n')
   input('Press enter when you are ready to play: ')
   difficulty = float(input('\nEnter any difficulty (can be decimal), where <1 = "Dying is illegal", 1-3 = "Pax Mongolica", 3-5 = "Recommended", >10 = "Sudden Death Syndrome": '))
   if stage == 0:
-      print("\nYou are in Constantinople, a Western city at the start of the Silk Road. Here you should purchase items for your upcoming journey. Remember to acquire goods for trading, food, water, spare equipment, entertainment, and defensive items.")
+      print("\nYou are in Constantinople, a Western city at the start of the Silk Road. Here you should purchase items for your upcoming journey. Remember to acquire goods for trading, food, and water.")
       input(' ')
-      print("You can do the following actions: map, price check, trade, inventory, and proceed. \n\nMap checks your location. \nPrice check displays prices in the following format: 'Good': Cost in silver. \nTrade allows you to buy and sell; trades should be input in format [TBD]. \nInventory displays what goods you own. \nProceed lets you leave the city and proceed to the next one.")
+      print("You can do the following actions: map, price check, trade, inventory, and proceed. \n\nMap checks your location. \nPrice check displays prices in the following format: 'Good': Cost in silver. \nTrade allows you to buy and sell. \nInventory displays what goods you own. \nProceed lets you leave the city and proceed to the next one.\nStats allows you to view your stats.")
       input(' ')
       print('You can access the list of commands and their explanations and a brief explanation of game principles by inputting "help commands" and "help info", respectively")')
       input(' ')
+  elif stage == 1:
+      print("\n{-|O|-|-|-|-|-}\nYou are now entering Baghdad, the first major center of trade of 6 you will encounter on your journey to Chang'an, China.")
+      input(' ')
+      print(" Situated along the Tigris River and linked to the Persian Gulf, the former capital of the Abbasid Caliphate had goods from both the maritime and overland Silk Roads. ")
+      input(' ')
+      print("It was also a major center of learning, containing numerous academic institutions at the forefront of the world at the time, such as the House of Wisdom.")
+  elif stage == 2:
+      print("\n{-|-|O|-|-|-|-}\nYou are now entering Rey. With the Caspian Sea and Persian Gulf to the North and South, caravans were funnelled into Rey. Maritime and overland goods can be purchased here.  ")
+      input(' ')
+      print('In addition to this, Rey holds significant religious and mythological significance for the Zoroastrians of Ancient Persia, as it was a sacred place of Ahura Mazda, the supreme Zoroastrian deity, and the nearby Mt. Damavand was a key location in the Shahnameh, the national epic of Persia.')
+  elif stage == 3:
+      print("\n{-|-|-|O|-|-|-}\nYou are now entering Merv. Situated by an oasis and by a fork between the Northern and Southern router of the Silk Road, Merv was an extremely important asset for empires, as evidenced by its history and its conquering by the Achaemenid Empire, the Greco-Bactrian Empire, the Sassanian Empire, Abbasid Caliphate, and Mongol Empire. ")
+      input(' ')
+      print("At its height in the early 1200s, it was the largest city in the world, with over half a million people. ")
+  elif stage == 4:
+      print('\n{-|-|-|-|O|-|-}\nYou are now entering Samarkand, the capital of the Timurid Empire and the birthplace of the Timurid Renaissance.')
+      input(' ')
+      print('In addition to being a major academic center, the city was also known for its architecture, describe by Ibn Battuta as "one of the greatest and finest of cities, and most perfect of them in beauty".')
+      input(' ')
+      print('The city is on the UNESCO list of World Heritage as Samarkand – Crossroads of Cultures.')
+  elif stage == 5:
+      print("\n{-|-|-|-|-|O|-}\nYou are now entering Dunhuang. Dunhuang was an oasis town, supported by the Crescent Lake, built on the edge of the Gobi desert. Chinese traders departing for the West would buy supplies and rest before their journey across the Gobi.")
+      input(' ')
+      print("The name Dunhuang means Blazing Beacon, as it controlled the entrance to the Gansu corridor, a narrow stretch of easily traversable land leading straight to the Chinese capital of Chang'an, and would thus warn the capital of any raids from Central Asia.")
+  elif stage == 6:
+      print("\n{-|-|-|-|-|-|O}\nYou are now entering Chang'an (today known as Xi'an). Congratulations! You've made it to the capital of ancient China, the end of the Silk Road")
 
   while(replay == True):
     stage = 0
@@ -396,7 +403,7 @@ def main():
     weekCounter = 0
     winCondition = False
     yourInventory = {
-      'silver': 200, 
+      'silver': 100, 
       'silk': 0, 
       'honey': 0,
       'ivory': 0,
@@ -447,7 +454,7 @@ def main():
       'water': 100,
       'morale': 100,
       'durability': 100,
-      'speed': 1
+      'milesPerTurn': 300
     }
     weights = {
       'silver': 10, 

@@ -4,3 +4,6 @@ This is a game loosely based of the mechanics of Oregon Trail. It is based on th
 # How to use
 The .py file is the source code which is being edited currently
 The Unix Executable zip and exe zip both contain beta versions of the app which you can test
+
+# Features
+All functional programming so its cooler than Java
